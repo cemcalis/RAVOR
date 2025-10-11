@@ -1,0 +1,4 @@
+name,slug,description,price,compare_price,category_slug,image_url,images,stock_status,is_featured,is_new
+"Örnek Elbise",ornek-elbise,"Şık ve zarif bir elbise",1250,1650,elbiseler,https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800,"https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800|https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800",in_stock,1,1
+"Örnek Bluz",ornek-bluz,"Rahat ve şık bluz",850,,ustler,https://images.unsplash.com/photo-1624206112918-f140f087f9b5?w=800,https://images.unsplash.com/photo-1624206112918-f140f087f9b5?w=800,in_stock,0,1
+"Örnek Pantolon",ornek-pantolon,"Modern kesim pantolon",1150,,altlar,https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800,https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800,in_stock,1,0

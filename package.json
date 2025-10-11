@@ -1,0 +1,24 @@
+{
+  "name": "aura-ecommerce",
+  "version": "1.0.0",
+  "description": "AURA E-Commerce Platform - Full Stack Next.js Application",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "netlify/functions"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd frontend && npm install && cd ../netlify/functions && npm install",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:frontend"
+  },
+  "keywords": [
+    "ecommerce",
+    "nextjs",
+    "netlify",
+    "serverless"
+  ],
+  "author": "",
+  "license": "ISC"
+}
