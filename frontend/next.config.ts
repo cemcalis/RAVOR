@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'export',
   eslint: {
     ignoreDuringBuilds: false,
   },
@@ -8,6 +9,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

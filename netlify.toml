@@ -1,7 +1,7 @@
 [build]
   base = "frontend"
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "22.20.0"
@@ -11,9 +11,6 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "bcrypt"]
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
 
 # Redirects for API
 [[redirects]]
