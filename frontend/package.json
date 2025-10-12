@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "autoprefixer": "^10.4.21",
+    "lightningcss": "^1.28.3",
     "next": "15.5.4",
     "next-i18next": "^15.4.2",
     "postcss": "^8.5.6",
