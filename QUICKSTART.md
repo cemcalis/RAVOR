@@ -1,4 +1,4 @@
-# ⚡ Hızlı Başlangıç - Netlify Deploy
+git push# ⚡ Hızlı Başlangıç - Netlify Deploy
 
 ## 🎯 3 Adımda Deploy Et
 
