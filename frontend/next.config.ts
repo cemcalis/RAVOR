@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  outputFileTracingRoot: require('path').join(__dirname, '../'),
   eslint: {
     ignoreDuringBuilds: false,
   },
@@ -10,7 +8,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

@@ -1,37 +1,41 @@
-git push# ⚡ Hızlı Başlangıç - Netlify Deploy
+# ⚡ Hızlı Başlangıç - Vercel Deploy
 
 ## 🎯 3 Adımda Deploy Et
 
-### 1. Netlify'a Git
-👉 https://app.netlify.com
+### 1. Vercel'e Git
+👉 https://vercel.com
 
-### 2. Projeyi Yükle
+### 2. GitHub Repo'yu Import Et
 
-**Drag & Drop ile:**
-- "Add new site" > "Deploy manually"
-- `istek` klasörünü sürükle-bırak
-
-**veya Git ile:**
+**Git ile Push:**
 ```bash
-git init
 git add .
-git commit -m "Initial commit"
-git remote add origin YOUR_REPO_URL
-git push -u origin main
+git commit -m "Ready for Vercel"
+git push
 ```
-Sonra Netlify'da "Import from Git" seç.
 
-### 3. Environment Variable Ekle
+**Vercel'de:**
+- "Add New Project" > "Import Git Repository"
+- GitHub repo'nuzu seçin (cemcalis/AURA)
+- Framework Preset: **Next.js** otomatik algılanacak
+- Root Directory: **frontend**
+- Build Command: `npm run build` (otomatik)
+- Output Directory: `.next` (otomatik)
 
-Site Settings > Environment Variables:
-```
-JWT_SECRET = your-super-secret-key-min-32-chars
-```
+### 3. Deploy Et
+
+- "Deploy" butonuna tıkla
+- Vercel otomatik build edip deploy edecek
 
 ## ✅ Bitti!
 
-Site URL'niz: `https://your-site-name.netlify.app`
+Site URL'niz: `https://your-project-name.vercel.app`
 
 ---
 
-📖 Detaylı rehber: `NETLIFY_DEPLOY_GUIDE.md`
+## 🔧 Önemli Notlar
+
+- Vercel Next.js için optimize edilmiştir
+- Her push otomatik deploy tetikler
+- Environment variables Vercel dashboard'dan eklenebilir
+- Edge Functions otomatik çalışır
