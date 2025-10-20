@@ -7,7 +7,9 @@
     "seed": "node seed.js",
     "import": "node import-csv.js",
     "dev": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "migrate": "node migrations/001_add_order_items_and_admin.js",
+    "migrate:run": "node migrate.js",
+    "test": "jest --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +23,12 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.9",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "winston": "^3.18.3",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "supertest": "^6.3.3"
   }
 }

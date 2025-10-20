@@ -80,7 +80,46 @@ export const api = {
   
   getOrder: (id: string) => fetchAPI(`/orders/${id}`),
   
-  getOrdersByEmail: (email: string) => fetchAPI(`/orders?email=${encodeURIComponent(email)}`),
+  // Favorites
+  getFavorites: (userId: number) => fetchAPI(`/favorites/${userId}`),
+
+  addToFavorites: (userId: number, productId: number) => fetchAPI(`/favorites/${userId}/${productId}`, {
+    method: 'POST',
+  }),
+
+  removeFromFavorites: (userId: number, productId: number) => fetchAPI(`/favorites/${userId}/${productId}`, {
+    method: 'DELETE',
+  }),
+
+  // Reviews
+  getProductReviews: (productId: number, page?: number, limit?: number) =>
+    fetchAPI(`/reviews/product/${productId}${page ? `?page=${page}&limit=${limit || 10}` : ''}`),
+
+  addReview: (productId: number, data: { rating: number; comment: string }) =>
+    fetchAPI(`/reviews/product/${productId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateReview: (reviewId: number, data: { rating: number; comment: string }) =>
+    fetchAPI(`/reviews/${reviewId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  deleteReview: (reviewId: number) =>
+    fetchAPI(`/reviews/${reviewId}`, {
+      method: 'DELETE',
+    }),
+
+  getAllReviews: (page?: number, limit?: number) =>
+    fetchAPI(`/reviews/admin/all${page ? `?page=${page}&limit=${limit || 20}` : ''}`),
+
+  updateReviewStatus: (reviewId: number, isApproved: boolean) =>
+    fetchAPI(`/reviews/admin/${reviewId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ isApproved }),
+    }),
 
   // Auth
   login: (email: string, password: string) => fetchAPI('/auth/login', {

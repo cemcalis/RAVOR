@@ -5,7 +5,8 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FiShoppingBag, FiHeart } from 'react-icons/fi';
-import { api } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 interface Product {
   id: number;
@@ -25,49 +26,70 @@ interface Product {
     color?: string;
     stock: number;
   }>;
+interface Review {
+  id: number;
+  product_id: number;
+  user_id?: number;
+  customer_name: string;
+  customer_email: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+  user_name?: string;
 }
 
-export default function ProductPage() {
+interface ReviewData {
+  reviews: Review[];
+  product: {
+    name: string;
+    slug: string;
+  };
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+  averageRating: number;
+  totalReviews: number;
+}
   const params = useParams();
   const slug = params?.slug as string;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState('');
-  const [quantity, setQuantity] = useState(1);
+  const [reviews, setReviews] = useState<ReviewData | null>(null);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
 
-  useEffect(() => {
-    fetchProduct();
-  }, [slug]);
+const [product, setProduct] = useState<Product | null>(null);
+const [loading, setLoading] = useState(true);
+const [selectedImage, setSelectedImage] = useState(0);
+const [reviews, setReviews] = useState<ReviewData | null>(null);
+const [reviewsLoading, setReviewsLoading] = useState(true);
+const [showReviewForm, setShowReviewForm] = useState(false);
+const [selectedSize, setSelectedSize] = useState('');
+const [quantity, setQuantity] = useState(1);
+const [submittingReview, setSubmittingReview] = useState(false);
+const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
 
-  const fetchProduct = async () => {
-    try {
-      const data = await api.getProduct(slug);
-      setProduct(data);
-      if (data.variants && data.variants.length > 0) {
-        setSelectedSize(data.variants[0].size);
-      }
-    } catch (error) {
-      console.error('Ürün yüklenemedi:', error);
-    } finally {
-      setLoading(false);
+const { user } = useAuth();
+const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
+
+useEffect(() => {
+  fetchProduct();
+}, [slug]);
+
+const fetchProduct = async () => {
+  try {
+    const data = await api.getProduct(slug);
+    setProduct(data);
+    if (data.variants && data.variants.length > 0) {
+      setSelectedSize(data.variants[0].size);
     }
-  };
-
-  const handleAddToCart = () => {
-    if (!selectedSize) {
-      alert('Lütfen beden seçiniz');
-      return;
-    }
-    // Sepete ekleme işlemi
-    alert(`${product?.name} sepete eklendi! (Beden: ${selectedSize}, Adet: ${quantity})`);
-  };
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse grid grid-cols-1 lg:grid-cols-2 gap-8">
+    setLoading(false);
           <div className="aspect-square bg-muted rounded-lg" />
           <div>
             <div className="h-8 bg-muted rounded mb-4 w-3/4" />

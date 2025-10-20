@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const adminAuth = require('../middleware/adminAuth');
 
 // Tüm kategorileri getir
 router.get('/', (req, res) => {
@@ -9,6 +10,16 @@ router.get('/', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     res.json(rows);
+  });
+});
+
+// Tüm kategorileri getir (admin)
+router.get('/admin', adminAuth, (req, res) => {
+  db.all('SELECT * FROM categories ORDER BY name ASC', [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ success: false, message: err.message });
+    }
+    res.json({ success: true, data: rows });
   });
 });
 
@@ -39,6 +50,57 @@ router.post('/', (req, res) => {
       res.status(201).json({ id: this.lastID, message: 'Kategori eklendi' });
     }
   );
+});
+
+// Yeni kategori ekle (admin)
+router.post('/admin', adminAuth, (req, res) => {
+  const { name } = req.body;
+
+  db.run(
+    'INSERT INTO categories (name) VALUES (?)',
+    [name],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ success: false, message: err.message });
+      }
+      res.status(201).json({ success: true, data: { id: this.lastID }, message: 'Kategori oluşturuldu' });
+    }
+  );
+});
+
+// Kategori güncelle (admin)
+router.put('/:id', adminAuth, (req, res) => {
+  const { name } = req.body;
+  const { id } = req.params;
+
+  db.run(
+    'UPDATE categories SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [name, id],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ success: false, message: err.message });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ success: false, message: 'Kategori bulunamadı' });
+      }
+      res.json({ success: true, message: 'Kategori güncellendi' });
+    }
+  );
+});
+
+// Kategori sil (admin)
+router.delete('/:id', adminAuth, (req, res) => {
+  const { id } = req.params;
+
+  db.run('DELETE FROM categories WHERE id = ?', [id], function(err) {
+    if (err) {
+      return res.status(500).json({ success: false, message: err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ success: false, message: 'Kategori bulunamadı' });
+    }
+    res.json({ success: true, message: 'Kategori silindi' });
+  });
 });
 
 module.exports = router;

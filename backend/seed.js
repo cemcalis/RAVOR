@@ -182,3 +182,23 @@ setTimeout(() => {
 
   console.log('✅ Seed data tamamlandı!');
 }, 1000);
+
+// Ensure admin user exists
+setTimeout(() => {
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@aura.com';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'ChangeMe!Please-SetEnv';
+  const bcrypt = require('bcrypt');
+  const SALT_ROUNDS = 10;
+
+  bcrypt.hash(adminPassword, SALT_ROUNDS).then(hashed => {
+    db.get('SELECT id FROM users WHERE email = ?', [adminEmail], (err, row) => {
+      if (err) return console.error('Admin check error:', err.message);
+      if (row) return console.log('Admin user already exists');
+
+      db.run('INSERT INTO users (email, password, name, is_admin) VALUES (?, ?, ?, ?)', [adminEmail, hashed, 'Admin', 1], function(err) {
+        if (err) console.error('Admin create error:', err.message);
+        else console.log('✅ Admin user created:', adminEmail);
+      });
+    });
+  }).catch(err => console.error('Hash error:', err));
+}, 2000);

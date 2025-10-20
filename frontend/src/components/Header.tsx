@@ -1,30 +1,42 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { FiSearch, FiShoppingBag, FiMenu, FiX, FiUser, FiLogOut } from 'react-icons/fi';
-import { useAuth } from '@/contexts/AuthContext';
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import {
+  FiSearch,
+  FiShoppingBag,
+  FiMenu,
+  FiX,
+  FiUser,
+  FiLogOut,
+  FiHeart,
+} from "react-icons/fi";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import HamburgerMenu from "./HamburgerMenu";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { favorites } = useFavorites();
 
   const categories = [
-    { name: 'Elbiseler', href: '/koleksiyon/elbiseler' },
-    { name: 'Üstler', href: '/koleksiyon/ustler' },
-    { name: 'Altlar', href: '/koleksiyon/altlar' },
-    { name: 'Dış Giyim', href: '/koleksiyon/dis-giyim' },
-    { name: 'Aksesuarlar', href: '/koleksiyon/aksesuarlar' },
-    { name: 'Yeni Gelenler', href: '/yeni-gelenler' },
-    { name: 'İndirim', href: '/indirim' },
+    { name: "Elbiseler", href: "/koleksiyon/elbiseler" },
+    { name: "Üstler", href: "/koleksiyon/ustler" },
+    { name: "Altlar", href: "/koleksiyon/altlar" },
+    { name: "Dış Giyim", href: "/koleksiyon/dis-giyim" },
+    { name: "Aksesuarlar", href: "/koleksiyon/aksesuarlar" },
+    { name: "Yeni Gelenler", href: "/yeni-gelenler" },
+    { name: "İndirim", href: "/indirim" },
   ];
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border">
       {/* Top bar - Ücretsiz kargo banner */}
-      <div className="bg-primary text-white text-center py-2 text-sm">
+      <div className="bg-champagne-peach text-black text-center py-2 text-sm">
         <p>2.000 TL ve üzeri alışverişlerde ücretsiz kargo 🚚</p>
       </div>
 
@@ -34,15 +46,21 @@ export default function Header() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 hover:bg-muted rounded-md transition-colors"
+            className="lg:hidden p-2 hover:bg-champagne-100 rounded-md transition-colors"
             aria-label="Menü"
           >
             {mobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
 
           {/* Logo */}
-          <Link href="/" className="text-2xl font-bold tracking-tight">
-            AURA
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src="/logo-ravor.png"
+              alt="logo"
+              width={96}
+              height={48}
+              className="object-contain"
+            />
           </Link>
 
           {/* Desktop navigation */}
@@ -51,7 +69,7 @@ export default function Header() {
               <Link
                 key={cat.href}
                 href={cat.href}
-                className="text-sm font-medium hover:text-secondary transition-colors"
+                className="text-sm font-medium hover:text-champagne-contrast transition-colors"
               >
                 {cat.name}
               </Link>
@@ -62,7 +80,7 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 hover:bg-muted rounded-md transition-colors"
+              className="p-2 hover:bg-champagne-100 rounded-md transition-colors"
               aria-label="Ara"
             >
               <FiSearch size={20} />
@@ -79,7 +97,7 @@ export default function Header() {
                   <FiUser size={20} />
                   <span className="text-sm font-medium">{user.name}</span>
                 </button>
-                
+
                 {userMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-border rounded-md shadow-lg py-2">
                     <Link
@@ -120,6 +138,19 @@ export default function Header() {
             )}
 
             <Link
+              href="/favoriler"
+              className="relative p-2 hover:bg-muted rounded-md transition-colors"
+              aria-label="Favoriler"
+            >
+              <FiHeart size={20} />
+              {user && favorites.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {favorites.length > 99 ? "99+" : favorites.length}
+                </span>
+              )}
+            </Link>
+
+            <Link
               href="/sepet"
               className="relative p-2 hover:bg-muted rounded-md transition-colors"
               aria-label="Sepet"
@@ -145,23 +176,11 @@ export default function Header() {
         )}
       </div>
 
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-border bg-white">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-2">
-            {categories.map((cat) => (
-              <Link
-                key={cat.href}
-                href={cat.href}
-                className="py-3 px-4 hover:bg-muted rounded-md transition-colors font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {cat.name}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
+      <HamburgerMenu
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        categories={categories}
+      />
     </header>
   );
 }

@@ -41,6 +41,7 @@ function initDatabase() {
         is_featured BOOLEAN DEFAULT 0,
         is_new BOOLEAN DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (category_id) REFERENCES categories(id)
       )
     `);
@@ -67,7 +68,9 @@ function initDatabase() {
         name TEXT NOT NULL,
         phone TEXT,
         address TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        is_admin BOOLEAN DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
@@ -92,16 +95,101 @@ function initDatabase() {
       CREATE TABLE IF NOT EXISTS order_items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         order_id INTEGER NOT NULL,
-        product_id INTEGER NOT NULL,
+        product_id INTEGER,
         variant_id INTEGER,
-        quantity INTEGER NOT NULL,
-        price REAL NOT NULL,
+        quantity INTEGER DEFAULT 1,
+        price REAL DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
         FOREIGN KEY (product_id) REFERENCES products(id)
       )
     `);
 
+    // Ürün yorumları
+    db.run(`
+      CREATE TABLE IF NOT EXISTS reviews (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id INTEGER NOT NULL,
+        user_id INTEGER,
+        customer_name TEXT NOT NULL,
+        customer_email TEXT NOT NULL,
+        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        comment TEXT NOT NULL,
+        is_approved BOOLEAN DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
     console.log('✅ Veritabanı tabloları hazır');
+    // Runtime migrations: ensure users table has is_admin and updated_at columns
+    db.all("PRAGMA table_info(users)", (err, cols) => {
+      if (err) {
+        // users table might not exist yet
+        return;
+      }
+
+      const colNames = (cols || []).map(c => c.name);
+      if (!colNames.includes('is_admin')) {
+        try {
+          db.run('ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT 0');
+          console.log('✅ users.is_admin sütunu eklendi');
+        } catch (e) {
+          console.error('users.is_admin eklenemedi:', e.message);
+        }
+      }
+
+      if (!colNames.includes('updated_at')) {
+        try {
+          // SQLite may disallow non-constant defaults in ALTER TABLE; add column without default
+          db.run('ALTER TABLE users ADD COLUMN updated_at DATETIME');
+          // Backfill existing rows
+          db.run("UPDATE users SET updated_at = created_at WHERE updated_at IS NULL");
+          console.log('✅ users.updated_at sütunu eklendi ve dolduruldu');
+        } catch (e) {
+          console.error('users.updated_at eklenemedi:', e.message);
+        }
+      }
+    });
+    // Ensure categories.updated_at exists
+    db.all("PRAGMA table_info(categories)", (err, cols) => {
+      if (err) return;
+      const colNames = (cols || []).map(c => c.name);
+      if (!colNames.includes('updated_at')) {
+        try {
+          db.run('ALTER TABLE categories ADD COLUMN updated_at DATETIME');
+          db.run("UPDATE categories SET updated_at = created_at WHERE updated_at IS NULL");
+          console.log('✅ categories.updated_at sütunu eklendi ve dolduruldu');
+        } catch (e) {
+          console.error('categories.updated_at eklenemedi:', e.message);
+        }
+      }
+    });
+
+    // Ensure orders.updated_at exists
+    db.all("PRAGMA table_info(orders)", (err, cols) => {
+      if (err) return;
+      const colNames = (cols || []).map(c => c.name);
+      if (!colNames.includes('updated_at')) {
+        try {
+          db.run('ALTER TABLE orders ADD COLUMN updated_at DATETIME');
+          db.run("UPDATE orders SET updated_at = created_at WHERE updated_at IS NULL");
+          console.log('✅ orders.updated_at sütunu eklendi ve dolduruldu');
+        } catch (e) {
+          console.error('orders.updated_at eklenemedi:', e.message);
+        }
+      }
+      // Ensure orders.user_id exists (older DBs might lack this column)
+      if (!colNames.includes('user_id')) {
+        try {
+          db.run('ALTER TABLE orders ADD COLUMN user_id INTEGER');
+          console.log('✅ orders.user_id sütunu eklendi');
+        } catch (e) {
+          console.error('orders.user_id eklenemedi:', e.message);
+        }
+      }
+    });
   });
 }
 

@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { FiInstagram, FiMail } from 'react-icons/fi';
+import Link from "next/link";
+import { FiInstagram, FiMail } from "react-icons/fi";
 
 export default function Footer() {
   return (
@@ -8,10 +8,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Marka */}
           <div>
-            <h3 className="text-xl font-bold mb-4">AURA</h3>
+            <h3 className="text-xl font-bold mb-4 text-champagne-contrast">
+              AURA
+            </h3>
             <p className="text-sm text-foreground/70 leading-relaxed">
-              Zamansız tasarımlar, sürdürülebilir moda. Her parça özenle seçilmiş, 
-              stilinize değer katan koleksiyonlar.
+              Zamansız tasarımlar, sürdürülebilir moda. Her parça özenle
+              seçilmiş, stilinize değer katan koleksiyonlar.
             </p>
             <div className="flex gap-4 mt-4">
               <a
@@ -35,30 +37,47 @@ export default function Footer() {
 
           {/* Alışveriş */}
           <div>
-            <h4 className="font-semibold mb-4">Alışveriş</h4>
+            <h4 className="font-semibold mb-4 text-champagne-contrast">
+              Alışveriş
+            </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/koleksiyon/elbiseler" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/koleksiyon/elbiseler"
+                  className="hover:text-secondary transition-colors"
+                >
                   Elbiseler
                 </Link>
               </li>
               <li>
-                <Link href="/koleksiyon/ustler" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/koleksiyon/ustler"
+                  className="hover:text-secondary transition-colors"
+                >
                   Üstler
                 </Link>
               </li>
               <li>
-                <Link href="/koleksiyon/altlar" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/koleksiyon/altlar"
+                  className="hover:text-secondary transition-colors"
+                >
                   Altlar
                 </Link>
               </li>
               <li>
-                <Link href="/yeni-gelenler" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/yeni-gelenler"
+                  className="hover:text-secondary transition-colors"
+                >
                   Yeni Gelenler
                 </Link>
               </li>
               <li>
-                <Link href="/indirim" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/indirim"
+                  className="hover:text-secondary transition-colors"
+                >
                   İndirim
                 </Link>
               </li>
@@ -67,30 +86,47 @@ export default function Footer() {
 
           {/* Bilgi */}
           <div>
-            <h4 className="font-semibold mb-4">Bilgi</h4>
+            <h4 className="font-semibold mb-4 text-champagne-contrast">
+              Bilgi
+            </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/hakkimizda" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/hakkimizda"
+                  className="hover:text-secondary transition-colors"
+                >
                   Hakkımızda
                 </Link>
               </li>
               <li>
-                <Link href="/iletisim" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/iletisim"
+                  className="hover:text-secondary transition-colors"
+                >
                   İletişim
                 </Link>
               </li>
               <li>
-                <Link href="/kargo-iade" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/kargo-iade"
+                  className="hover:text-secondary transition-colors"
+                >
                   Kargo & İade
                 </Link>
               </li>
               <li>
-                <Link href="/gizlilik" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/gizlilik"
+                  className="hover:text-secondary transition-colors"
+                >
                   Gizlilik Politikası
                 </Link>
               </li>
               <li>
-                <Link href="/kullanim-kosullari" className="hover:text-secondary transition-colors">
+                <Link
+                  href="/kullanim-kosullari"
+                  className="hover:text-secondary transition-colors"
+                >
                   Kullanım Koşulları
                 </Link>
               </li>
@@ -99,7 +135,9 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="font-semibold mb-4">Bülten</h4>
+            <h4 className="font-semibold mb-4 text-champagne-contrast">
+              Bülten
+            </h4>
             <p className="text-sm text-foreground/70 mb-4">
               Yeni koleksiyonlar ve özel fırsatlardan haberdar olun.
             </p>

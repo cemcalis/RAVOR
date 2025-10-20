@@ -2,6 +2,7 @@ require('dotenv').config({ path: '../.env' });
 const express = require('express');
 const cors = require('cors');
 const db = require('./db');
+const logger = require('./lib/logger');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,12 +18,16 @@ const productRoutes = require('./routes/products');
 const categoryRoutes = require('./routes/categories');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/orders');
+const adminRoutes = require('./routes/admin');
+const adminMgmtRoutes = require('./routes/admin-management');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/admin-management', adminMgmtRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -31,14 +36,16 @@ app.get('/api/health', (req, res) => {
 
 // Error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(err && err.stack ? err.stack : String(err));
   res.status(500).json({ error: 'Bir hata oluştu!' });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`);
-  console.log(`📊 API endpoint: http://localhost:${PORT}/api`);
-});
+// Start server only when run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    logger.info(`🚀 Server çalışıyor: http://localhost:${PORT}`);
+    logger.info(`📊 API endpoint: http://localhost:${PORT}/api`);
+  });
+}
 
 module.exports = app;

@@ -6,7 +6,15 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'champagne-peach': '#F2CDBF',
+        'champagne-contrast': '#111111',
+        'champagne-accent': '#8B5E4B',
+        'champagne-100': '#FBF1EE',
+        'champagne-200': '#F7D7C8',
+      }
+    },
   },
   plugins: [],
 }
