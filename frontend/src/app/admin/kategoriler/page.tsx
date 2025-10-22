@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { HiPlus, HiPencil, HiTrash } from 'react-icons/hi';
 
 interface Category {
@@ -17,14 +18,31 @@ export default function AdminCategories() {
   const [formData, setFormData] = useState({
     name: ''
   });
+  const router = useRouter();
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/categories');
+      const token = localStorage.getItem('adminToken');
+
+      if (!token) {
+        router.push('/admin/giris');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/admin/categories', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminToken');
+        router.push('/admin/giris');
+        setLoading(false);
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setCategories(data.data);
@@ -34,7 +52,11 @@ export default function AdminCategories() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

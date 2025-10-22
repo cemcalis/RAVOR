@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { HiPlus, HiPencil, HiTrash, HiSearch } from 'react-icons/hi';
 
 interface Product {
@@ -47,15 +48,31 @@ export default function AdminProducts() {
     is_featured: false,
     is_new: false
   });
+  const router = useRouter();
 
-  useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/products');
+      const token = localStorage.getItem('adminToken');
+
+      if (!token) {
+        router.push('/admin/giris');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/admin/products', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminToken');
+        router.push('/admin/giris');
+        setLoading(false);
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setProducts(data.data.products);
@@ -65,11 +82,29 @@ export default function AdminProducts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/categories');
+      const token = localStorage.getItem('adminToken');
+
+      if (!token) {
+        router.push('/admin/giris');
+        return;
+      }
+
+      const response = await fetch('/api/admin/categories', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminToken');
+        router.push('/admin/giris');
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setCategories(data.data);
@@ -77,7 +112,12 @@ export default function AdminProducts() {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, [fetchCategories, fetchProducts]);
 
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

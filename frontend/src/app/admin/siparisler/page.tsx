@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { HiEye, HiCheck, HiX, HiTruck } from 'react-icons/hi';
 
 interface Order {
@@ -18,14 +19,31 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderDetails, setOrderDetails] = useState<any>(null);
+  const router = useRouter();
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/orders');
+      const token = localStorage.getItem('adminToken');
+
+      if (!token) {
+        router.push('/admin/giris');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/admin/orders', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminToken');
+        router.push('/admin/giris');
+        setLoading(false);
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setOrders(data.data.orders);
@@ -35,7 +53,11 @@ export default function AdminOrders() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const updateOrderStatus = async (orderId: number, newStatus: string) => {
     try {

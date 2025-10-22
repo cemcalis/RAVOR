@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { HiEye, HiBan, HiCheck } from 'react-icons/hi';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { HiEye, HiBan } from 'react-icons/hi';
 
 interface User {
   id: number;
@@ -14,14 +15,31 @@ export default function AdminUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const router = useRouter();
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/users');
+      const token = localStorage.getItem('adminToken');
+
+      if (!token) {
+        router.push('/admin/giris');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminToken');
+        router.push('/admin/giris');
+        setLoading(false);
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setUsers(data.data.users);
@@ -31,7 +49,11 @@ export default function AdminUsers() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const viewUserDetails = (user: User) => {
     setSelectedUser(user);
@@ -54,24 +76,6 @@ export default function AdminUsers() {
       }
     } catch (error) {
       console.error('Error banning user:', error);
-    }
-  };
-
-  const unbanUser = async (userId: number) => {
-    try {
-      const token = localStorage.getItem('adminToken');
-      const response = await fetch(`/api/admin/users/${userId}/unban`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        fetchUsers();
-      }
-    } catch (error) {
-      console.error('Error unbanning user:', error);
     }
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface DashboardStats {
@@ -16,20 +16,27 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    // Check if admin is authenticated
-    const adminToken = localStorage.getItem('adminToken');
-    if (!adminToken) {
-      router.push('/admin/giris');
-      return;
-    }
-
-    fetchStats();
-  }, [router]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/stats');
+      const token = localStorage.getItem('adminToken');
+
+      if (!token) {
+        router.push('/admin/giris');
+        return;
+      }
+
+      const response = await fetch('/api/admin/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminToken');
+        router.push('/admin/giris');
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setStats(data);
@@ -39,7 +46,18 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    // Check if admin is authenticated
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) {
+      router.push('/admin/giris');
+      return;
+    }
+
+    fetchStats();
+  }, [fetchStats, router]);
 
   if (loading) {
     return (
