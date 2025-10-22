@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { api } from '@/lib/api';
 
@@ -34,7 +34,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const { user, token } = useAuth();
 
   // Favori ürünleri yükleme fonksiyonu
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     if (!user || !token) {
       setFavorites([]);
       return;
@@ -50,12 +50,12 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, token]);
 
   // Sayfa yüklendiğinde favorileri yükle
   useEffect(() => {
     loadFavorites();
-  }, [user, token]);
+  }, [loadFavorites]);
 
   // Favoriye ekleme
   const addToFavorites = async (productId: number) => {

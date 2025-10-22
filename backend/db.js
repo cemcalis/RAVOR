@@ -1,7 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
-const dbPath = path.join(__dirname, '../database/store.db');
+const dataDir = path.join(__dirname, '../database');
+fs.mkdirSync(dataDir, { recursive: true });
+const dbPath = path.join(dataDir, 'store.db');
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('❌ Veritabanı bağlantı hatası:', err.message);
@@ -122,6 +125,19 @@ function initDatabase() {
       )
     `);
 
+    // Favoriler
+    db.run(`
+      CREATE TABLE IF NOT EXISTS favorites (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        UNIQUE(user_id, product_id)
+      )
+    `);
+
     console.log('✅ Veritabanı tabloları hazır');
     // Runtime migrations: ensure users table has is_admin and updated_at columns
     db.all("PRAGMA table_info(users)", (err, cols) => {
@@ -132,24 +148,32 @@ function initDatabase() {
 
       const colNames = (cols || []).map(c => c.name);
       if (!colNames.includes('is_admin')) {
-        try {
-          db.run('ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT 0');
-          console.log('✅ users.is_admin sütunu eklendi');
-        } catch (e) {
-          console.error('users.is_admin eklenemedi:', e.message);
-        }
+        db.run('ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT 0', (alterErr) => {
+          if (alterErr && !/duplicate column/i.test(alterErr.message)) {
+            console.error('users.is_admin eklenemedi:', alterErr.message);
+          } else {
+            console.log('✅ users.is_admin sütunu eklendi');
+          }
+        });
       }
 
       if (!colNames.includes('updated_at')) {
-        try {
-          // SQLite may disallow non-constant defaults in ALTER TABLE; add column without default
-          db.run('ALTER TABLE users ADD COLUMN updated_at DATETIME');
-          // Backfill existing rows
-          db.run("UPDATE users SET updated_at = created_at WHERE updated_at IS NULL");
-          console.log('✅ users.updated_at sütunu eklendi ve dolduruldu');
-        } catch (e) {
-          console.error('users.updated_at eklenemedi:', e.message);
-        }
+        db.run('ALTER TABLE users ADD COLUMN updated_at DATETIME', (alterErr) => {
+          if (alterErr && !/duplicate column/i.test(alterErr.message)) {
+            console.error('users.updated_at eklenemedi:', alterErr.message);
+            return;
+          }
+          db.run(
+            "UPDATE users SET updated_at = COALESCE(updated_at, created_at)",
+            (updateErr) => {
+              if (updateErr) {
+                console.error('users.updated_at doldurulamadı:', updateErr.message);
+              } else {
+                console.log('✅ users.updated_at sütunu eklendi ve dolduruldu');
+              }
+            }
+          );
+        });
       }
     });
     // Ensure categories.updated_at exists
@@ -157,13 +181,22 @@ function initDatabase() {
       if (err) return;
       const colNames = (cols || []).map(c => c.name);
       if (!colNames.includes('updated_at')) {
-        try {
-          db.run('ALTER TABLE categories ADD COLUMN updated_at DATETIME');
-          db.run("UPDATE categories SET updated_at = created_at WHERE updated_at IS NULL");
-          console.log('✅ categories.updated_at sütunu eklendi ve dolduruldu');
-        } catch (e) {
-          console.error('categories.updated_at eklenemedi:', e.message);
-        }
+        db.run('ALTER TABLE categories ADD COLUMN updated_at DATETIME', (alterErr) => {
+          if (alterErr && !/duplicate column/i.test(alterErr.message)) {
+            console.error('categories.updated_at eklenemedi:', alterErr.message);
+            return;
+          }
+          db.run(
+            "UPDATE categories SET updated_at = COALESCE(updated_at, created_at)",
+            (updateErr) => {
+              if (updateErr) {
+                console.error('categories.updated_at doldurulamadı:', updateErr.message);
+              } else {
+                console.log('✅ categories.updated_at sütunu eklendi ve dolduruldu');
+              }
+            }
+          );
+        });
       }
     });
 
@@ -172,22 +205,32 @@ function initDatabase() {
       if (err) return;
       const colNames = (cols || []).map(c => c.name);
       if (!colNames.includes('updated_at')) {
-        try {
-          db.run('ALTER TABLE orders ADD COLUMN updated_at DATETIME');
-          db.run("UPDATE orders SET updated_at = created_at WHERE updated_at IS NULL");
-          console.log('✅ orders.updated_at sütunu eklendi ve dolduruldu');
-        } catch (e) {
-          console.error('orders.updated_at eklenemedi:', e.message);
-        }
+        db.run('ALTER TABLE orders ADD COLUMN updated_at DATETIME', (alterErr) => {
+          if (alterErr && !/duplicate column/i.test(alterErr.message)) {
+            console.error('orders.updated_at eklenemedi:', alterErr.message);
+            return;
+          }
+          db.run(
+            "UPDATE orders SET updated_at = COALESCE(updated_at, created_at)",
+            (updateErr) => {
+              if (updateErr) {
+                console.error('orders.updated_at doldurulamadı:', updateErr.message);
+              } else {
+                console.log('✅ orders.updated_at sütunu eklendi ve dolduruldu');
+              }
+            }
+          );
+        });
       }
       // Ensure orders.user_id exists (older DBs might lack this column)
       if (!colNames.includes('user_id')) {
-        try {
-          db.run('ALTER TABLE orders ADD COLUMN user_id INTEGER');
-          console.log('✅ orders.user_id sütunu eklendi');
-        } catch (e) {
-          console.error('orders.user_id eklenemedi:', e.message);
-        }
+        db.run('ALTER TABLE orders ADD COLUMN user_id INTEGER', (alterErr) => {
+          if (alterErr && !/duplicate column/i.test(alterErr.message)) {
+            console.error('orders.user_id eklenemedi:', alterErr.message);
+          } else {
+            console.log('✅ orders.user_id sütunu eklendi');
+          }
+        });
       }
     });
   });

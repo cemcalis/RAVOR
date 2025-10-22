@@ -53,14 +53,16 @@ export default function Header() {
           </button>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3" aria-label="AURA anasayfa">
             <Image
-              src="/logo-ravor.png"
-              alt="logo"
-              width={96}
-              height={48}
-              className="object-contain"
+              src="/logo-aura.svg"
+              alt="AURA"
+              width={120}
+              height={36}
+              className="h-9 w-auto object-contain"
+              priority
             />
+            <span className="sr-only">AURA</span>
           </Link>
 
           {/* Desktop navigation */}

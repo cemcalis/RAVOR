@@ -21,6 +21,7 @@ const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/admin');
 const adminMgmtRoutes = require('./routes/admin-management');
 const favoritesRoutes = require('./routes/favorites');
+const reviewRoutes = require('./routes/reviews');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -30,6 +31,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin-management', adminMgmtRoutes);
 app.use('/api/favorites', favoritesRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
