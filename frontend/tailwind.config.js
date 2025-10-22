@@ -8,6 +8,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        primary: 'var(--primary)',
+        secondary: 'var(--secondary)',
+        accent: 'var(--accent)',
+        muted: 'var(--muted)',
+        border: 'var(--border)',
         'champagne-peach': '#F2CDBF',
         'champagne-contrast': '#111111',
         'champagne-accent': '#8B5E4B',
