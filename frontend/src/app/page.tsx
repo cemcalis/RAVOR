@@ -28,13 +28,13 @@ export default function Home() {
     <>
       <Hero />
 
-      <Section title="Koleksiyonlar" className="bg-white">
+      <Section title="Koleksiyonlar" className="bg-white/60 backdrop-blur">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {collections.map((collection) => (
             <Link
               key={collection.href}
               href={collection.href}
-              className="group relative h-72 overflow-hidden rounded-lg"
+              className="group relative h-72 overflow-hidden rounded-xl shadow-sm"
             >
               <Image
                 src={collection.image}
@@ -44,9 +44,9 @@ export default function Home() {
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 priority={collection.href === collections[0].href}
               />
-              <div className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/30" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(31,20,17,0.6)] via-transparent to-transparent transition-colors group-hover:from-[rgba(31,20,17,0.7)]" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <h3 className="text-2xl font-semibold text-white">{collection.title}</h3>
+                <h3 className="text-2xl font-semibold text-champagne-100 drop-shadow-lg">{collection.title}</h3>
               </div>
             </Link>
           ))}

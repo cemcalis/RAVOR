@@ -3,15 +3,15 @@ import { FiInstagram, FiMail } from "react-icons/fi";
 
 export default function Footer() {
   return (
-    <footer className="bg-muted border-t border-border mt-20">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="bg-gradient-to-b from-champagne-contrast via-[#2b1e19] to-[#1a110f] text-champagne-100 mt-20">
+      <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Marka */}
           <div>
-            <h3 className="text-xl font-bold mb-4 text-champagne-contrast">
+            <h3 className="text-xl font-bold mb-4 text-champagne-peach">
               AURA
             </h3>
-            <p className="text-sm text-foreground/70 leading-relaxed">
+            <p className="text-sm text-[rgba(255,240,232,0.85)] leading-relaxed">
               Zamansız tasarımlar, sürdürülebilir moda. Her parça özenle
               seçilmiş, stilinize değer katan koleksiyonlar.
             </p>
@@ -20,14 +20,14 @@ export default function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 hover:bg-white rounded-full transition-colors"
+                className="p-2 rounded-full transition-colors bg-white/10 hover:bg-white/20"
                 aria-label="Instagram"
               >
                 <FiInstagram size={20} />
               </a>
               <a
                 href="mailto:info@aura.com"
-                className="p-2 hover:bg-white rounded-full transition-colors"
+                className="p-2 rounded-full transition-colors bg-white/10 hover:bg-white/20"
                 aria-label="E-posta"
               >
                 <FiMail size={20} />
@@ -37,14 +37,14 @@ export default function Footer() {
 
           {/* Alışveriş */}
           <div>
-            <h4 className="font-semibold mb-4 text-champagne-contrast">
+            <h4 className="font-semibold mb-4 text-champagne-peach">
               Alışveriş
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
                   href="/koleksiyon/elbiseler"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   Elbiseler
                 </Link>
@@ -52,7 +52,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/koleksiyon/ustler"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   Üstler
                 </Link>
@@ -60,7 +60,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/koleksiyon/altlar"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   Altlar
                 </Link>
@@ -68,7 +68,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/yeni-gelenler"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   Yeni Gelenler
                 </Link>
@@ -76,7 +76,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/indirim"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   İndirim
                 </Link>
@@ -86,14 +86,14 @@ export default function Footer() {
 
           {/* Bilgi */}
           <div>
-            <h4 className="font-semibold mb-4 text-champagne-contrast">
+            <h4 className="font-semibold mb-4 text-champagne-peach">
               Bilgi
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
                   href="/hakkimizda"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   Hakkımızda
                 </Link>
@@ -101,7 +101,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/iletisim"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   İletişim
                 </Link>
@@ -109,7 +109,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/kargo-iade"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   Kargo & İade
                 </Link>
@@ -117,7 +117,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/gizlilik"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   Gizlilik Politikası
                 </Link>
@@ -125,7 +125,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/kullanim-kosullari"
-                  className="hover:text-secondary transition-colors"
+                  className="text-[rgba(255,240,232,0.85)] hover:text-accent transition-colors"
                 >
                   Kullanım Koşulları
                 </Link>
@@ -135,21 +135,21 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="font-semibold mb-4 text-champagne-contrast">
+            <h4 className="font-semibold mb-4 text-champagne-peach">
               Bülten
             </h4>
-            <p className="text-sm text-foreground/70 mb-4">
+            <p className="text-sm text-[rgba(255,240,232,0.85)] mb-4">
               Yeni koleksiyonlar ve özel fırsatlardan haberdar olun.
             </p>
             <form className="flex flex-col gap-2">
               <input
                 type="email"
                 placeholder="E-posta adresiniz"
-                className="px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-sm"
+                className="px-4 py-2 border border-[rgba(239,214,203,0.5)] bg-white/10 text-champagne-100 placeholder:text-[rgba(255,240,232,0.6)] rounded-md focus:outline-none focus:ring-2 focus:ring-[rgba(242,205,191,0.6)] text-sm"
               />
               <button
                 type="submit"
-                className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors text-sm font-medium"
+                className="bg-accent text-champagne-contrast px-4 py-2 rounded-md hover:bg-champagne-200 transition-colors text-sm font-medium"
               >
                 Abone Ol
               </button>
@@ -158,7 +158,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-border mt-8 pt-8 text-center text-sm text-foreground/60">
+        <div className="border-t border-white/10 mt-12 pt-6 text-center text-sm text-[rgba(255,240,232,0.6)]">
           <p>&copy; {new Date().getFullYear()} AURA. Tüm hakları saklıdır.</p>
         </div>
       </div>

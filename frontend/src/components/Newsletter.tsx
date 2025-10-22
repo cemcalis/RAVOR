@@ -19,10 +19,10 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="bg-accent/20 py-16">
+    <section className="bg-gradient-to-r from-champagne-100 via-[#f6d7ca] to-champagne-200 py-16">
       <div className="container mx-auto px-4 max-w-2xl text-center">
-        <h2 className="text-3xl font-bold mb-4">Bültenimize Abone Olun</h2>
-        <p className="text-foreground/70 mb-8">
+        <h2 className="text-3xl font-bold mb-4 text-champagne-contrast">Bültenimize Abone Olun</h2>
+        <p className="text-champagne-contrast opacity-80 mb-8">
           Yeni koleksiyonlar, özel indirimler ve stil ipuçlarından ilk siz haberdar olun.
         </p>
 
@@ -33,19 +33,19 @@ export default function Newsletter() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="E-posta adresiniz"
             required
-            className="flex-1 px-4 py-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
+            className="flex-1 px-4 py-3 border border-champagne-200 rounded-md bg-white/70 focus:outline-none focus:ring-2 focus:ring-[rgba(242,205,191,0.6)]"
           />
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className="bg-champagne-peach text-champagne-contrast px-8 py-3 rounded-md font-medium shadow-[0_10px_25px_rgba(31,20,17,0.15)] hover:bg-champagne-200 transition-colors disabled:opacity-50"
           >
             {status === 'loading' ? 'Gönderiliyor...' : 'Abone Ol'}
           </button>
         </form>
 
         {status === 'success' && (
-          <p className="mt-4 text-green-600 font-medium">
+          <p className="mt-4 text-champagne-contrast font-medium">
             ✓ Başarıyla abone oldunuz!
           </p>
         )}
