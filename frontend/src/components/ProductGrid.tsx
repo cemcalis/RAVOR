@@ -20,9 +20,10 @@ interface ProductGridProps {
   title: string;
   filter?: 'featured' | 'new';
   limit?: number;
+  className?: string;
 }
 
-export default function ProductGrid({ title, filter, limit = 8 }: ProductGridProps) {
+export default function ProductGrid({ title, filter, limit = 8, className }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +52,7 @@ export default function ProductGrid({ title, filter, limit = 8 }: ProductGridPro
 
   if (loading) {
     return (
-      <section className="py-16">
+      <section className={`py-16 ${className || ''}`}>
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">{title}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -69,7 +70,7 @@ export default function ProductGrid({ title, filter, limit = 8 }: ProductGridPro
   }
 
   return (
-    <section className="py-16">
+    <section className={`py-16 ${className || ''}`}>
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8 text-center">{title}</h2>
         

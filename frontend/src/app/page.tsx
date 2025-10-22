@@ -33,6 +33,7 @@ export default function Home() {
               src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800"
               alt="Elbiseler"
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
@@ -49,6 +50,7 @@ export default function Home() {
               src="https://images.unsplash.com/photo-1624206112918-f140f087f9b5?w=800"
               alt="Üstler"
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
@@ -65,6 +67,7 @@ export default function Home() {
               src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800"
               alt="Aksesuarlar"
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />

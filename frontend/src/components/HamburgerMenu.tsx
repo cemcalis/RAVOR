@@ -11,7 +11,7 @@ export default function HamburgerMenu({ open, onClose, categories = [] }: any) {
     <div className="fixed inset-0 z-50 bg-white/95 backdrop-blur-lg">
       <div className="container mx-auto px-6 py-8 h-full flex flex-col">
         <div className="flex items-center justify-between">
-          <Image src="/logo-ravor.png" alt="logo" width={120} height={60} />
+          <Image src="/logo-aura.svg" alt="AURA" width={120} height={60} style={{ width: 'auto', height: 'auto' }} priority />
           <button onClick={onClose} className="p-2">
             <FiX size={28} />
           </button>
@@ -22,7 +22,7 @@ export default function HamburgerMenu({ open, onClose, categories = [] }: any) {
             <Link
               key={c.href}
               href={c.href}
-              className="text-2xl font-medium text-champagne-contrast py-3"
+              className="text-2xl font-medium text-foreground py-3"
               onClick={onClose}
             >
               {c.name}
@@ -30,7 +30,7 @@ export default function HamburgerMenu({ open, onClose, categories = [] }: any) {
           ))}
         </nav>
 
-        <div className="py-6 border-t border-[#efe0da]">
+        <div className="py-6 border-t border-border">
           <div className="flex gap-4">
             <a href="#" className="text-sm">
               İletişim

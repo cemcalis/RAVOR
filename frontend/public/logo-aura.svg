@@ -1,0 +1,27 @@
+<svg width="400" height="180" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5e4b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f2cdbf;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="180" fill="transparent"/>
+
+  <!-- Main Text -->
+  <text x="200" y="90" text-anchor="middle" fill="url(#gradient)" font-family="Playfair Display, serif" font-size="48" font-weight="600" letter-spacing="2px">
+    AURA
+  </text>
+
+  <!-- Subtitle -->
+  <text x="200" y="130" text-anchor="middle" fill="#8b5e4b" font-family="Inter, sans-serif" font-size="16" font-weight="300" letter-spacing="4px">
+    ZAMANSIZ TASARIMLAR
+  </text>
+
+  <!-- Decorative elements -->
+  <circle cx="80" cy="50" r="2" fill="#f2cdbf" opacity="0.6"/>
+  <circle cx="320" cy="50" r="2" fill="#f2cdbf" opacity="0.6"/>
+  <circle cx="80" cy="140" r="2" fill="#f2cdbf" opacity="0.6"/>
+  <circle cx="320" cy="140" r="2" fill="#f2cdbf" opacity="0.6"/>
+</svg>

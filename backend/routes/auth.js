@@ -107,18 +107,34 @@ router.post('/login', (req, res) => {
   });
 });
 
-// Kullanıcı bilgilerini getir (token ile)
-router.get('/me', authenticateToken, (req, res) => {
-  db.get('SELECT id, email, name, phone, address, created_at FROM users WHERE id = ?', [req.user.userId], (err, user) => {
+// Token'ı doğrula
+router.post('/verify', (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token bulunamadı' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(500).json({ error: 'Veritabanı hatası' });
+      return res.status(401).json({ error: 'Geçersiz token' });
     }
 
-    if (!user) {
-      return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
-    }
+    // Kullanıcı bilgilerini getir
+    db.get('SELECT id, email, name, phone, address FROM users WHERE id = ?', [decoded.userId], (err, user) => {
+      if (err) {
+        return res.status(500).json({ error: 'Veritabanı hatası' });
+      }
 
-    res.json({ user });
+      if (!user) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
+      }
+
+      res.json({
+        message: 'Token geçerli',
+        user
+      });
+    });
   });
 });
 

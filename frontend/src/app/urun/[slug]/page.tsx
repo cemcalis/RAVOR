@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { FiShoppingBag, FiHeart } from 'react-icons/fi';
-import { useAuth } from '@/contexts/AuthContext';
-import { useFavorites } from '@/contexts/FavoritesContext';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { FiShoppingBag, FiHeart } from "react-icons/fi";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import { api } from "@/lib/api";
 
 interface Product {
   id: number;
@@ -20,12 +21,14 @@ interface Product {
   stock_status: string;
   category_name: string;
   category_slug: string;
-  variants?: Array<{
+  variants?: {
     id: number;
     size: string;
     color?: string;
     stock: number;
-  }>;
+  }[];
+}
+
 interface Review {
   id: number;
   product_id: number;
@@ -53,6 +56,8 @@ interface ReviewData {
   averageRating: number;
   totalReviews: number;
 }
+
+export default function ProductPage() {
   const params = useParams();
   const slug = params?.slug as string;
 
@@ -62,35 +67,44 @@ interface ReviewData {
   const [reviews, setReviews] = useState<ReviewData | null>(null);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+  const [selectedSize, setSelectedSize] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
 
-const [product, setProduct] = useState<Product | null>(null);
-const [loading, setLoading] = useState(true);
-const [selectedImage, setSelectedImage] = useState(0);
-const [reviews, setReviews] = useState<ReviewData | null>(null);
-const [reviewsLoading, setReviewsLoading] = useState(true);
-const [showReviewForm, setShowReviewForm] = useState(false);
-const [selectedSize, setSelectedSize] = useState('');
-const [quantity, setQuantity] = useState(1);
-const [submittingReview, setSubmittingReview] = useState(false);
-const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+  const { user } = useAuth();
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
 
-const { user } = useAuth();
-const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
+  useEffect(() => {
+    fetchProduct();
+  }, [slug]);
 
-useEffect(() => {
-  fetchProduct();
-}, [slug]);
-
-const fetchProduct = async () => {
-  try {
-    const data = await api.getProduct(slug);
-    setProduct(data);
-    if (data.variants && data.variants.length > 0) {
-      setSelectedSize(data.variants[0].size);
+  const fetchProduct = async () => {
+    try {
+      const data = await api.getProduct(slug);
+      setProduct(data);
+      if (data.variants && data.variants.length > 0) {
+        setSelectedSize(data.variants[0].size);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Ürün yüklenirken hata:", error);
+      setLoading(false);
     }
-    setLoading(false);
-          <div className="aspect-square bg-muted rounded-lg" />
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div>
+            <div className="aspect-square bg-muted rounded-lg mb-4" />
+            <div className="grid grid-cols-4 gap-2">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="aspect-square bg-muted rounded-md" />
+              ))}
+            </div>
+          </div>
           <div>
             <div className="h-8 bg-muted rounded mb-4 w-3/4" />
             <div className="h-6 bg-muted rounded mb-4 w-1/4" />
@@ -112,19 +126,39 @@ const fetchProduct = async () => {
     );
   }
 
+  const handleAddToCart = async () => {
+    // TODO: Implement add to cart functionality
+    console.log(
+      "Sepete eklendi:",
+      product.name,
+      "Adet:",
+      quantity,
+      "Beden:",
+      selectedSize
+    );
+  };
+
   const discount = product.compare_price
-    ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+    ? Math.round(
+        ((product.compare_price - product.price) / product.compare_price) * 100
+      )
     : 0;
 
-  const allImages = product.images.length > 0 ? product.images : [product.image_url];
+  const allImages =
+    product.images.length > 0 ? product.images : [product.image_url];
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm mb-6 text-foreground/60">
-        <Link href="/" className="hover:text-foreground">Anasayfa</Link>
+        <Link href="/" className="hover:text-foreground">
+          Anasayfa
+        </Link>
         <span>/</span>
-        <Link href={`/koleksiyon/${product.category_slug}`} className="hover:text-foreground">
+        <Link
+          href={`/koleksiyon/${product.category_slug}`}
+          className="hover:text-foreground"
+        >
           {product.category_name}
         </Link>
         <span>/</span>
@@ -139,6 +173,7 @@ const fetchProduct = async () => {
               src={allImages[selectedImage]}
               alt={product.name}
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 50vw"
               className="object-cover"
               priority
             />
@@ -157,10 +192,18 @@ const fetchProduct = async () => {
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
                   className={`relative aspect-square rounded-md overflow-hidden border-2 transition-colors ${
-                    selectedImage === idx ? 'border-primary' : 'border-transparent'
+                    selectedImage === idx
+                      ? "border-primary"
+                      : "border-transparent"
                   }`}
                 >
-                  <Image src={img} alt={`${product.name} ${idx + 1}`} fill className="object-cover" />
+                  <Image
+                    src={img}
+                    alt={`${product.name} ${idx + 1}`}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -172,15 +215,19 @@ const fetchProduct = async () => {
           <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
 
           <div className="flex items-center gap-3 mb-6">
-            <span className="text-3xl font-bold">{product.price.toLocaleString('tr-TR')} TL</span>
+            <span className="text-3xl font-bold">
+              {product.price.toLocaleString("tr-TR")} TL
+            </span>
             {product.compare_price && (
               <span className="text-xl text-foreground/50 line-through">
-                {product.compare_price.toLocaleString('tr-TR')} TL
+                {product.compare_price.toLocaleString("tr-TR")} TL
               </span>
             )}
           </div>
 
-          <p className="text-foreground/70 mb-8 leading-relaxed">{product.description}</p>
+          <p className="text-foreground/70 mb-8 leading-relaxed">
+            {product.description}
+          </p>
 
           {/* Size Selection */}
           {product.variants && product.variants.length > 0 && (
@@ -194,9 +241,11 @@ const fetchProduct = async () => {
                     disabled={variant.stock === 0}
                     className={`px-4 py-2 border rounded-md transition-colors ${
                       selectedSize === variant.size
-                        ? 'border-primary bg-primary text-white'
-                        : 'border-border hover:border-primary'
-                    } ${variant.stock === 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
+                        ? "border-primary bg-primary text-white"
+                        : "border-border hover:border-primary"
+                    } ${
+                      variant.stock === 0 ? "opacity-30 cursor-not-allowed" : ""
+                    }`}
                   >
                     {variant.size}
                   </button>
@@ -229,11 +278,13 @@ const fetchProduct = async () => {
           <div className="flex gap-3 mb-8">
             <button
               onClick={handleAddToCart}
-              disabled={product.stock_status === 'out_of_stock'}
+              disabled={product.stock_status === "out_of_stock"}
               className="flex-1 bg-primary text-white px-6 py-4 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <FiShoppingBag />
-              {product.stock_status === 'out_of_stock' ? 'Stokta Yok' : 'Sepete Ekle'}
+              {product.stock_status === "out_of_stock"
+                ? "Stokta Yok"
+                : "Sepete Ekle"}
             </button>
             <button className="w-14 h-14 border border-border rounded-md hover:bg-muted transition-colors flex items-center justify-center">
               <FiHeart size={20} />
@@ -244,14 +295,23 @@ const fetchProduct = async () => {
           <div className="border-t border-border pt-6 space-y-4 text-sm">
             <div className="flex justify-between">
               <span className="text-foreground/60">Kategori:</span>
-              <Link href={`/koleksiyon/${product.category_slug}`} className="font-medium hover:text-secondary">
+              <Link
+                href={`/koleksiyon/${product.category_slug}`}
+                className="font-medium hover:text-secondary"
+              >
                 {product.category_name}
               </Link>
             </div>
             <div className="flex justify-between">
               <span className="text-foreground/60">Stok Durumu:</span>
-              <span className={product.stock_status === 'in_stock' ? 'text-green-600' : 'text-red-600'}>
-                {product.stock_status === 'in_stock' ? 'Stokta' : 'Tükendi'}
+              <span
+                className={
+                  product.stock_status === "in_stock"
+                    ? "text-green-600"
+                    : "text-red-600"
+                }
+              >
+                {product.stock_status === "in_stock" ? "Stokta" : "Tükendi"}
               </span>
             </div>
             <div className="flex justify-between">

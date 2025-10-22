@@ -186,7 +186,7 @@ setTimeout(() => {
 // Ensure admin user exists
 setTimeout(() => {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@aura.com';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'ChangeMe!Please-SetEnv';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123admin';
   const bcrypt = require('bcrypt');
   const SALT_ROUNDS = 10;
 

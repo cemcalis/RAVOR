@@ -1,2 +1,0 @@
--- noop migration placeholder: payment_method already added by JS migration
--- This file intentionally left blank to avoid duplicate ALTER

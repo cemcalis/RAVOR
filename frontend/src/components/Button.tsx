@@ -10,11 +10,11 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center px-4 py-2 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2";
+    "inline-flex items-center justify-center px-4 py-2 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200";
   const styles =
     variant === "solid"
-      ? "bg-champagne-peach text-white hover:bg-champagne-accent focus:ring-champagne-accent"
-      : "border border-champagne-200 text-champagne-contrast bg-white hover:bg-champagne-100 focus:ring-champagne-accent";
+      ? "bg-primary text-white hover:bg-secondary focus:ring-secondary"
+      : "border border-gray-300 text-foreground bg-white hover:bg-muted focus:ring-secondary";
 
   return <button className={`${base} ${styles} ${className}`} {...props} />;
 }

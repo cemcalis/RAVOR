@@ -63,16 +63,30 @@ export default function ProductCard({
     }
   };
 
+  const [imageError, setImageError] = useState(false);
+
   return (
     <div className="group relative">
       <Link href={`/urun/${slug}`} className="block">
         <div className="relative aspect-[3/4] bg-muted overflow-hidden rounded-lg mb-3">
-          <Image
-            src={image_url}
-            alt={name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-          />
+          {!imageError ? (
+            <Image
+              src={image_url}
+              alt={name}
+              fill
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="eager"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-champagne-100 to-champagne-200 flex items-center justify-center">
+              <div className="text-center text-foreground/50">
+                <div className="text-4xl mb-2">👗</div>
+                <div className="text-sm font-medium">Loading Image</div>
+              </div>
+            </div>
+          )}
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">

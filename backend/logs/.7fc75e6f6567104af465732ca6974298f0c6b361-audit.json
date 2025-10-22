@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "c:\\Users\\Cem\\Desktop\\istek\\backend\\logs\\.7fc75e6f6567104af465732ca6974298f0c6b361-audit.json",
+    "files": [
+        {
+            "date": 1761077006158,
+            "name": "c:\\Users\\Cem\\Desktop\\istek\\backend\\logs\\app-2025-10-21.log",
+            "hash": "0b38f74ec970f6cb00383573fff83109e73de25c2f0e016fba181bc707626641"
+        }
+    ],
+    "hashType": "sha256"
+}

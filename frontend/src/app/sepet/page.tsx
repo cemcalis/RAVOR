@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { FiTrash2, FiShoppingBag } from 'react-icons/fi';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FiTrash2, FiShoppingBag } from "react-icons/fi";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CartItem {
   id: number;
@@ -20,42 +20,46 @@ interface CartItem {
 export default function CartPage() {
   const router = useRouter();
   const { user } = useAuth();
-  
+
   // Demo sepet - gerçek uygulamada context/state management kullanılır
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
       id: 1,
-      name: 'Minimal Siyah Elbise',
-      slug: 'minimal-siyah-elbise',
+      name: "Minimal Siyah Elbise",
+      slug: "minimal-siyah-elbise",
       price: 1250,
-      image_url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400',
-      size: 'M',
+      image_url:
+        "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400",
+      size: "M",
       quantity: 1,
     },
   ]);
 
   const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setCartItems(items =>
-      items.map(item =>
+    setCartItems((items) =>
+      items.map((item) =>
         item.id === id ? { ...item, quantity: newQuantity } : item
       )
     );
   };
 
   const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+    setCartItems((items) => items.filter((item) => item.id !== id));
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal >= 2000 ? 0 : 49.90;
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const shipping = subtotal >= 2000 ? 0 : 49.9;
   const total = subtotal + shipping;
 
   const handleCheckout = () => {
     if (!user) {
-      router.push('/giris?redirect=/sepet');
+      router.push("/giris?redirect=/sepet");
     } else {
-      router.push('/odeme');
+      router.push("/odeme");
     }
   };
 
@@ -90,33 +94,48 @@ export default function CartPage() {
                 key={item.id}
                 className="flex gap-4 p-4 border border-border rounded-lg hover:shadow-md transition-shadow"
               >
-                <Link href={`/urun/${item.slug}`} className="relative w-24 h-32 flex-shrink-0">
+                <Link
+                  href={`/urun/${item.slug}`}
+                  className="relative w-24 h-32 flex-shrink-0"
+                >
                   <Image
                     src={item.image_url}
                     alt={item.name}
                     fill
+                    sizes="96px"
                     className="object-cover rounded-md"
                   />
                 </Link>
 
                 <div className="flex-1">
-                  <Link href={`/urun/${item.slug}`} className="font-medium hover:text-secondary">
+                  <Link
+                    href={`/urun/${item.slug}`}
+                    className="font-medium hover:text-secondary"
+                  >
                     {item.name}
                   </Link>
-                  <p className="text-sm text-foreground/60 mt-1">Beden: {item.size}</p>
-                  <p className="font-semibold mt-2">{item.price.toLocaleString('tr-TR')} TL</p>
+                  <p className="text-sm text-foreground/60 mt-1">
+                    Beden: {item.size}
+                  </p>
+                  <p className="font-semibold mt-2">
+                    {item.price.toLocaleString("tr-TR")} TL
+                  </p>
 
                   <div className="flex items-center gap-3 mt-4">
                     <div className="flex items-center gap-2 border border-border rounded-md">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity - 1)
+                        }
                         className="px-3 py-1 hover:bg-muted transition-colors"
                       >
                         -
                       </button>
                       <span className="w-8 text-center">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
                         className="px-3 py-1 hover:bg-muted transition-colors"
                       >
                         +
@@ -145,7 +164,9 @@ export default function CartPage() {
             <div className="space-y-3 mb-4 pb-4 border-b border-border">
               <div className="flex justify-between text-sm">
                 <span className="text-foreground/60">Ara Toplam</span>
-                <span className="font-medium">{subtotal.toLocaleString('tr-TR')} TL</span>
+                <span className="font-medium">
+                  {subtotal.toLocaleString("tr-TR")} TL
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-foreground/60">Kargo</span>
@@ -153,7 +174,7 @@ export default function CartPage() {
                   {shipping === 0 ? (
                     <span className="text-green-600">Ücretsiz</span>
                   ) : (
-                    `${shipping.toLocaleString('tr-TR')} TL`
+                    `${shipping.toLocaleString("tr-TR")} TL`
                   )}
                 </span>
               </div>
@@ -161,13 +182,13 @@ export default function CartPage() {
 
             <div className="flex justify-between text-lg font-bold mb-6">
               <span>Toplam</span>
-              <span>{total.toLocaleString('tr-TR')} TL</span>
+              <span>{total.toLocaleString("tr-TR")} TL</span>
             </div>
 
             {subtotal < 2000 && (
               <p className="text-sm text-foreground/60 mb-4 p-3 bg-accent/20 rounded-md">
-                🚚 {(2000 - subtotal).toLocaleString('tr-TR')} TL daha alışveriş yapın, 
-                kargo ücretsiz olsun!
+                🚚 {(2000 - subtotal).toLocaleString("tr-TR")} TL daha alışveriş
+                yapın, kargo ücretsiz olsun!
               </p>
             )}
 
@@ -175,9 +196,9 @@ export default function CartPage() {
               onClick={handleCheckout}
               className="block w-full bg-primary text-white text-center px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors mb-3"
             >
-              {user ? 'Ödemeye Geç' : 'Giriş Yapın'}
+              {user ? "Ödemeye Geç" : "Giriş Yapın"}
             </button>
-            
+
             {!user && (
               <p className="text-xs text-center text-foreground/60 mb-3">
                 Ödeme yapmak için giriş yapmanız gerekmektedir

@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -12,6 +12,7 @@ export default function AboutPage() {
               src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"
               alt="AURA Store"
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 50vw"
               className="object-cover"
             />
           </div>
@@ -19,15 +20,17 @@ export default function AboutPage() {
           <div className="flex flex-col justify-center">
             <h2 className="text-3xl font-bold mb-4">AURA</h2>
             <p className="text-foreground/70 mb-4 leading-relaxed">
-              2025 yılında kurulan AURA, zamansız tasarımlar ve sürdürülebilir moda anlayışıyla 
-              kadınların gardıroplarına değer katan parçalar sunuyor.
+              2025 yılında kurulan AURA, zamansız tasarımlar ve sürdürülebilir
+              moda anlayışıyla kadınların gardıroplarına değer katan parçalar
+              sunuyor.
             </p>
             <p className="text-foreground/70 mb-4 leading-relaxed">
-              Her koleksiyonumuz, minimal estetiği modern kesimlerle birleştirerek 
-              günlük hayatın her anında rahatlıkla giyebileceğiniz şık parçalar yaratıyor.
+              Her koleksiyonumuz, minimal estetiği modern kesimlerle
+              birleştirerek günlük hayatın her anında rahatlıkla giyebileceğiniz
+              şık parçalar yaratıyor.
             </p>
             <p className="text-foreground/70 leading-relaxed">
-              Kaliteli kumaşlar, özenli işçilik ve zamansız tasarımlarla, 
+              Kaliteli kumaşlar, özenli işçilik ve zamansız tasarımlarla,
               trendlerin ötesinde bir stil anlayışı sunuyoruz.
             </p>
           </div>
@@ -54,7 +57,8 @@ export default function AboutPage() {
             <div>
               <h4 className="font-semibold mb-2">🌿 Sürdürülebilirlik</h4>
               <p className="text-sm text-foreground/70">
-                Çevre dostu üretim süreçleri ve kaliteli malzemelerle uzun ömürlü ürünler.
+                Çevre dostu üretim süreçleri ve kaliteli malzemelerle uzun
+                ömürlü ürünler.
               </p>
             </div>
             <div>

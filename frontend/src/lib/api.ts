@@ -1,10 +1,36 @@
 // API Configuration
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+// Log resolved API_URL during development to help detect misconfiguration like 
+// an environment variable containing only a port (e.g. ':5000') which would
+// cause requests to go to an invalid origin.
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    // eslint-disable-next-line no-console
+    console.debug('[api] Using API_URL =', API_URL);
+  } catch (e) {
+    // ignore
+  }
+}
+
+// Developer-time sanity check: ensure API_URL is a valid absolute or relative path.
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    // If API_URL looks like just a port (e.g. ':5000') it's likely misconfigured
+    if (/^:\d+$/.test(API_URL)) {
+      // eslint-disable-next-line no-console
+      console.error('[api] NEXT_PUBLIC_API_URL appears to be just a port (e.g. ":5000").\n' +
+        'Please set NEXT_PUBLIC_API_URL to a valid origin or relative path (e.g. "http://localhost:5000/api" or "/api").');
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
 // Helper function for API calls
 export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const url = `${API_URL}${endpoint}`;
-  
+
   const defaultOptions: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -13,17 +39,33 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     ...options,
   };
 
+  // Add authorization header if token exists
+  const token = localStorage.getItem('token');
+  if (token) {
+    defaultOptions.headers = {
+      ...defaultOptions.headers,
+      'Authorization': `Bearer ${token}`,
+    };
+  }
+
   try {
     const response = await fetch(url, defaultOptions);
-    
+
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Network error' }));
-      throw new Error(error.error || `HTTP error! status: ${response.status}`);
+      const errorBody = await response.json().catch(() => ({ error: 'Network error' }));
+      const message = errorBody?.error || `HTTP error! status: ${response.status}`;
+      const err = new Error(message);
+      // attach details for caller
+      (err as any).status = response.status;
+      (err as any).url = url;
+      throw err;
     }
-    
+
     return await response.json();
   } catch (error) {
-    console.error('API Error:', error);
+    // include URL in logs to help debugging malformed API URL or network issues
+    // eslint-disable-next-line no-console
+    console.error('API Error:', { message: (error as Error).message, url, error });
     throw error;
   }
 }
@@ -87,7 +129,7 @@ export const api = {
     method: 'POST',
   }),
 
-  removeFromFavorites: (userId: number, productId: number) => fetchAPI(`/favorites/${userId}/${productId}`, {
+  clearFavorites: (userId: number) => fetchAPI(`/favorites/${userId}`, {
     method: 'DELETE',
   }),
 

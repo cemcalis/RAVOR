@@ -33,8 +33,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedUser = localStorage.getItem('user');
 
     if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      // Token'ı backend'te doğrula
+      api.verifyToken(storedToken)
+        .then(() => {
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
+        })
+        .catch(() => {
+          // Token geçersiz, temizle
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setToken(null);
+          setUser(null);
+        });
     }
     setIsLoading(false);
   }, []);

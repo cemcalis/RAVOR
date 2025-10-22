@@ -8,6 +8,7 @@ export default function Hero() {
         src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=80"
         alt="Hero"
         fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1920px"
         className="object-cover"
         priority
       />
