@@ -89,7 +89,7 @@ export const api = {
 
   // Cart
   getCart: (sessionId: string) => fetchAPI(`/cart/${sessionId}`),
-  
+
   addToCart: (sessionId: string, data: any) => fetchAPI(`/cart/${sessionId}/add`, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -104,11 +104,13 @@ export const api = {
   }),
 
   // Orders
+  getOrders: () => fetchAPI('/orders'),
+
   createOrder: (data: any) => fetchAPI('/orders', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  
+
   getOrder: (id: string) => fetchAPI(`/orders/${id}`),
   
   // Favorites
@@ -116,6 +118,10 @@ export const api = {
 
   addToFavorites: (userId: number, productId: number) => fetchAPI(`/favorites/${userId}/${productId}`, {
     method: 'POST',
+  }),
+
+  removeFromFavorites: (userId: number, productId: number) => fetchAPI(`/favorites/${userId}/${productId}`, {
+    method: 'DELETE',
   }),
 
   clearFavorites: (userId: number) => fetchAPI(`/favorites/${userId}`, {

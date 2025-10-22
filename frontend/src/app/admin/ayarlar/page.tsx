@@ -46,7 +46,9 @@ export default function AdminSettings() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     setSettings({
       ...settings,
       [e.target.name]: e.target.value
