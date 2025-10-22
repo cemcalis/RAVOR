@@ -135,7 +135,7 @@ Skinny Jean,skinny-jean,"Modern skinny jean pantolon",890,1200,altlar,https://ex
           >
             ← Admin Paneli
           </Link>
-          <h1 className="text-3xl font-bold">CSV'den Ürün Import</h1>
+          <h1 className="text-3xl font-bold">CSV’den Ürün Import</h1>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">

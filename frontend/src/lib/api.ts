@@ -5,26 +5,15 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000
 // an environment variable containing only a port (e.g. ':5000') which would
 // cause requests to go to an invalid origin.
 if (process.env.NODE_ENV !== 'production') {
-  try {
-    // eslint-disable-next-line no-console
-    console.debug('[api] Using API_URL =', API_URL);
-  } catch (e) {
-    // ignore
-  }
+  // eslint-disable-next-line no-console
+  console.debug('[api] Using API_URL =', API_URL);
 }
 
 // Developer-time sanity check: ensure API_URL is a valid absolute or relative path.
-if (process.env.NODE_ENV !== 'production') {
-  try {
-    // If API_URL looks like just a port (e.g. ':5000') it's likely misconfigured
-    if (/^:\d+$/.test(API_URL)) {
-      // eslint-disable-next-line no-console
-      console.error('[api] NEXT_PUBLIC_API_URL appears to be just a port (e.g. ":5000").\n' +
-        'Please set NEXT_PUBLIC_API_URL to a valid origin or relative path (e.g. "http://localhost:5000/api" or "/api").');
-    }
-  } catch (e) {
-    // ignore
-  }
+if (process.env.NODE_ENV !== 'production' && /^:\d+$/.test(API_URL)) {
+  // eslint-disable-next-line no-console
+  console.error('[api] NEXT_PUBLIC_API_URL appears to be just a port (e.g. ":5000").\n' +
+    'Please set NEXT_PUBLIC_API_URL to a valid origin or relative path (e.g. "http://localhost:5000/api" or "/api").');
 }
 
 // Helper function for API calls

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
 import { api } from '@/lib/api';
 
@@ -27,14 +27,10 @@ export default function ProductGrid({ title, filter, limit = 8, className }: Pro
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [filter]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const filters: any = {};
-      
+
       if (filter === 'featured') {
         filters.featured = true;
       } else if (filter === 'new') {
@@ -48,7 +44,11 @@ export default function ProductGrid({ title, filter, limit = 8, className }: Pro
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, limit]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   if (loading) {
     return (
