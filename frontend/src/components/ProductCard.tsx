@@ -68,7 +68,7 @@ export default function ProductCard({
   return (
     <div className="group relative">
       <Link href={`/urun/${slug}`} className="block">
-        <div className="relative aspect-[3/4] bg-muted overflow-hidden rounded-lg mb-3">
+        <div className="relative aspect-[3/4] bg-champagne-100 overflow-hidden rounded-xl mb-3 shadow-sm">
           {!imageError ? (
             <Image
               src={image_url}
@@ -91,12 +91,12 @@ export default function ProductCard({
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {is_new && (
-              <span className="bg-primary text-white text-xs px-3 py-1 rounded-full font-medium">
+              <span className="bg-primary text-champagne-100 text-xs px-3 py-1 rounded-full font-medium shadow">
                 YENİ
               </span>
             )}
             {discount > 0 && (
-              <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+              <span className="bg-secondary text-white text-xs px-3 py-1 rounded-full font-medium shadow">
                 %{discount}
               </span>
             )}
@@ -113,8 +113,8 @@ export default function ProductCard({
             disabled={isAddingToFavorites}
             className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-200 ${
               isProductFavorite
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
+                ? 'bg-secondary text-white hover:bg-secondary/80'
+                : 'bg-[rgba(251,241,238,0.85)] text-champagne-contrast hover:bg-champagne-peach hover:text-champagne-contrast'
             } ${isAddingToFavorites ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Heart
@@ -126,14 +126,14 @@ export default function ProductCard({
           </button>
         </div>
 
-        <div>
-          <h3 className="font-medium mb-1 group-hover:text-secondary transition-colors">
+        <div className="px-1">
+          <h3 className="font-medium mb-1 text-champagne-contrast group-hover:text-secondary transition-colors">
             {name}
           </h3>
           <div className="flex items-center gap-2">
-            <span className="font-semibold">{price.toLocaleString('tr-TR')} TL</span>
+            <span className="font-semibold text-champagne-contrast">{price.toLocaleString('tr-TR')} TL</span>
             {compare_price && (
-              <span className="text-sm text-foreground/50 line-through">
+              <span className="text-sm text-champagne-contrast opacity-60 line-through">
                 {compare_price.toLocaleString('tr-TR')} TL
               </span>
             )}

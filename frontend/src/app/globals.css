@@ -2,15 +2,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --primary: #2d2d2d;
-  --secondary: #8b7355;
-  --accent: #d4c5b9;
-  --muted: #f8f9fa;
-  --border: #e9ecef;
+  --background: #fbf1ee;
+  --foreground: #2b1e19;
+  --primary: #8b5e4b;
+  --secondary: #c27d67;
+  --accent: #f2cdbf;
+  --muted: #fff6f2;
+  --border: #efd6cb;
   --champagne-peach: #f2cdbf;
-  --champagne-contrast: #111111;
+  --champagne-contrast: #1f1411;
   --champagne-accent: #8b5e4b;
   --champagne-100: #fbf1ee;
   --champagne-200: #f7d7c8;
@@ -26,8 +26,8 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--champagne-contrast);
+  background: linear-gradient(180deg, #fff9f6 0%, var(--background) 45%, #f6d7ca 100%);
+  color: var(--foreground);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   letter-spacing: -0.01em;
   line-height: 1.6;
@@ -44,7 +44,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--muted);
+  background: var(--champagne-100);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -97,7 +97,7 @@ html {
 
 /* Text gradient */
 .text-gradient {
-  background: linear-gradient(135deg, var(--champagne-contrast), var(--champagne-accent));
+  background: linear-gradient(135deg, var(--champagne-accent), var(--champagne-contrast));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
