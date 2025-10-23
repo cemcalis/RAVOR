@@ -5,13 +5,11 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000
 // an environment variable containing only a port (e.g. ':5000') which would
 // cause requests to go to an invalid origin.
 if (process.env.NODE_ENV !== 'production') {
-  // eslint-disable-next-line no-console
   console.debug('[api] Using API_URL =', API_URL);
 }
 
 // Developer-time sanity check: ensure API_URL is a valid absolute or relative path.
 if (process.env.NODE_ENV !== 'production' && /^:\d+$/.test(API_URL)) {
-  // eslint-disable-next-line no-console
   console.error('[api] NEXT_PUBLIC_API_URL appears to be just a port (e.g. ":5000").\n' +
     'Please set NEXT_PUBLIC_API_URL to a valid origin or relative path (e.g. "http://localhost:5000/api" or "/api").');
 }
@@ -29,11 +27,11 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   };
 
   // Add authorization header if token exists
-  const token = localStorage.getItem('token');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   if (token) {
     defaultOptions.headers = {
       ...defaultOptions.headers,
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     };
   }
 
@@ -53,7 +51,6 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     return await response.json();
   } catch (error) {
     // include URL in logs to help debugging malformed API URL or network issues
-    // eslint-disable-next-line no-console
     console.error('API Error:', { message: (error as Error).message, url, error });
     throw error;
   }
@@ -89,7 +86,7 @@ export const api = {
 
   // Cart
   getCart: (sessionId: string) => fetchAPI(`/cart/${sessionId}`),
-  
+
   addToCart: (sessionId: string, data: any) => fetchAPI(`/cart/${sessionId}/add`, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -104,11 +101,13 @@ export const api = {
   }),
 
   // Orders
+  getOrders: () => fetchAPI('/orders'),
+
   createOrder: (data: any) => fetchAPI('/orders', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  
+
   getOrder: (id: string) => fetchAPI(`/orders/${id}`),
   
   // Favorites
@@ -116,6 +115,10 @@ export const api = {
 
   addToFavorites: (userId: number, productId: number) => fetchAPI(`/favorites/${userId}/${productId}`, {
     method: 'POST',
+  }),
+
+  removeFromFavorites: (userId: number, productId: number) => fetchAPI(`/favorites/${userId}/${productId}`, {
+    method: 'DELETE',
   }),
 
   clearFavorites: (userId: number) => fetchAPI(`/favorites/${userId}`, {

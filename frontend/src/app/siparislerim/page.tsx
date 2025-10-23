@@ -37,10 +37,8 @@ export default function OrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      if (user?.email) {
-        const data = await api.getOrdersByEmail(user.email);
-        setOrders(data);
-      }
+      const data = await api.getOrders();
+      setOrders(data);
     } catch (error) {
       console.error('Siparişler yüklenemedi:', error);
     } finally {
