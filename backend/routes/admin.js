@@ -776,4 +776,38 @@ router.post('/import-csv', adminAuth, async (req, res) => {
 
 module.exports = router;
 
+// Diagnostic endpoint to help with production deploy checks (admin-only)
+// Returns basic info (DB file exists, uploads dir exists, JWT secret presence)
+// Keep this protected by adminAuth and remove or restrict in long-term production.
+// Usage: GET /api/admin/_diag (must be authenticated as admin)
+router.get('/_diag', adminAuth, (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const dbPath = path.join(__dirname, '..', 'database', 'store.db');
+    const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
+
+    const dbExists = fs.existsSync(dbPath);
+    const uploadsExists = fs.existsSync(uploadsDir);
+
+    res.json({
+      success: true,
+      data: {
+        nodeEnv: process.env.NODE_ENV || null,
+        baseUrl: process.env.BASE_URL || null,
+        jwtSecretSet: !!process.env.JWT_SECRET,
+        dbPath,
+        dbExists,
+        uploadsDir,
+        uploadsExists
+      }
+    });
+  } catch (err) {
+    console.error('Admin diag error:', err && err.stack ? err.stack : err);
+    res.status(500).json({ success: false, message: 'Diag failed' });
+  }
+});
+
+
+
 
