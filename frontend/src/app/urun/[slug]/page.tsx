@@ -76,6 +76,8 @@ export default function ProductPage() {
   const { user } = useAuth();
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
 
+  const router = useRouter();
+
   useEffect(() => {
     fetchProduct();
   }, [slug]);
@@ -127,7 +129,6 @@ export default function ProductPage() {
     );
   }
 
-  const router = useRouter();
 
   const handleAddToCart = async () => {
     // Require user to be logged in before adding to cart
