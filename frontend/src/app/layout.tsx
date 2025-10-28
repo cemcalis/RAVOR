@@ -9,24 +9,25 @@ import { FavoritesProvider } from "@/contexts/FavoritesContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: 'swap',
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  display: 'swap',
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "AURA - Zamansız Tasarımlar",
-  description: "Minimal ve şık kadın giyim koleksiyonu. Elbise, üst, alt giyim ve aksesuarlar. Premium kalite, ücretsiz kargo.",
+  title: "RAVOR - Zamansız Tasarımlar",
+  description:
+    "Minimal ve şık kadın giyim koleksiyonu. Elbise, üst, alt giyim ve aksesuarlar. Premium kalite, ücretsiz kargo.",
   keywords: "kadın giyim, elbise, moda, alışveriş, online alışveriş, tasarım",
-  authors: [{ name: "AURA" }],
+  authors: [{ name: "RAVOR" }],
 };
 
 export const viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
 };
 
@@ -36,15 +37,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className={`${geistSans.variable} ${geistMono.variable}`} data-scroll-behavior="smooth">
+    <html
+      lang="tr"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      data-scroll-behavior="smooth"
+    >
       <body className="font-body antialiased bg-background text-foreground">
         <AuthProvider>
           <FavoritesProvider>
             <div className="min-h-screen flex flex-col">
               <Header />
-              <main className="flex-grow">
-                {children}
-              </main>
+              <main className="flex-grow">{children}</main>
               <Footer />
             </div>
           </FavoritesProvider>

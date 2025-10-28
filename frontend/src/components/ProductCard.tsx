@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useFavorites } from '@/contexts/FavoritesContext';
-import { Heart } from 'lucide-react';
+import Link from "next/link";
+import Image from "next/image";
+import { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import { Heart } from "lucide-react";
 
 interface ProductCardProps {
   id: number;
@@ -44,7 +44,7 @@ export default function ProductCard({
 
     if (!user) {
       // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
-      window.location.href = '/giris';
+      window.location.href = "/giris";
       return;
     }
 
@@ -57,16 +57,41 @@ export default function ProductCard({
         await addToFavorites(id);
       }
     } catch (error) {
-      console.error('Favori işlemi başarısız:', error);
+      console.error("Favori işlemi başarısız:", error);
     } finally {
       setIsAddingToFavorites(false);
     }
   };
 
   const [imageError, setImageError] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [visibleAnimated, setVisibleAnimated] = useState(false);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleAnimated(true);
+            obs.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
-    <div className="group relative">
+    <div
+      ref={rootRef}
+      className={`group relative ${
+        visibleAnimated ? "animate-fade-in-up" : "opacity-0"
+      }`}
+    >
       <Link href={`/urun/${slug}`} className="block">
         <div className="relative aspect-[3/4] bg-champagne-100 overflow-hidden rounded-xl mb-3 shadow-sm">
           {!imageError ? (
@@ -100,7 +125,7 @@ export default function ProductCard({
                 %{discount}
               </span>
             )}
-            {stock_status === 'out_of_stock' && (
+            {stock_status === "out_of_stock" && (
               <span className="bg-gray-500 text-white text-xs px-3 py-1 rounded-full font-medium">
                 TÜKENDİ
               </span>
@@ -113,14 +138,14 @@ export default function ProductCard({
             disabled={isAddingToFavorites}
             className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-200 ${
               isProductFavorite
-                ? 'bg-secondary text-white hover:bg-secondary/80'
-                : 'bg-[rgba(251,241,238,0.85)] text-champagne-contrast hover:bg-champagne-peach hover:text-champagne-contrast'
-            } ${isAddingToFavorites ? 'opacity-50 cursor-not-allowed' : ''}`}
+                ? "bg-secondary text-white hover:bg-secondary/80"
+                : "bg-[rgba(251,241,238,0.70)] text-champagne-contrast hover:bg-champagne-peach hover:text-champagne-contrast"
+            } ${isAddingToFavorites ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             <Heart
               size={16}
               className={`transition-all duration-200 ${
-                isProductFavorite ? 'fill-current' : ''
+                isProductFavorite ? "fill-current" : ""
               }`}
             />
           </button>
@@ -131,10 +156,12 @@ export default function ProductCard({
             {name}
           </h3>
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-champagne-contrast">{price.toLocaleString('tr-TR')} TL</span>
+            <span className="font-semibold text-champagne-contrast">
+              {price.toLocaleString("tr-TR")} TL
+            </span>
             {compare_price && (
               <span className="text-sm text-champagne-contrast opacity-60 line-through">
-                {compare_price.toLocaleString('tr-TR')} TL
+                {compare_price.toLocaleString("tr-TR")} TL
               </span>
             )}
           </div>

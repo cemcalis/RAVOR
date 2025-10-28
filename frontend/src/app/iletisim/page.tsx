@@ -1,34 +1,40 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { FiMail, FiPhone, FiMapPin, FiInstagram } from 'react-icons/fi';
+import { useState } from "react";
+import { FiMail, FiPhone, FiMapPin, FiInstagram } from "react-icons/fi";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
   });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('loading');
+    setStatus("loading");
 
     // Simüle edilmiş form gönderimi
     setTimeout(() => {
-      setStatus('success');
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-      setTimeout(() => setStatus('idle'), 3000);
+      setStatus("success");
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setTimeout(() => setStatus("idle"), 3000);
     }, 1500);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -38,7 +44,8 @@ export default function ContactPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">İletişim</h1>
           <p className="text-foreground/60 max-w-2xl mx-auto">
-            Sorularınız, önerileriniz veya işbirliği teklifleriniz için bizimle iletişime geçin.
+            Sorularınız, önerileriniz veya işbirliği teklifleriniz için bizimle
+            iletişime geçin.
           </p>
         </div>
 
@@ -52,8 +59,8 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">E-posta</h3>
-                  <p className="text-sm text-foreground/60">info@aura.com</p>
-                  <p className="text-sm text-foreground/60">destek@aura.com</p>
+                  <p className="text-sm text-foreground/60">info@ravor.com</p>
+                  <p className="text-sm text-foreground/60">destek@ravor.com</p>
                 </div>
               </div>
             </div>
@@ -65,8 +72,12 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">Telefon</h3>
-                  <p className="text-sm text-foreground/60">+90 555 123 45 67</p>
-                  <p className="text-sm text-foreground/60">Hafta içi 09:00 - 18:00</p>
+                  <p className="text-sm text-foreground/60">
+                    +90 555 123 45 67
+                  </p>
+                  <p className="text-sm text-foreground/60">
+                    Hafta içi 09:00 - 18:00
+                  </p>
                 </div>
               </div>
             </div>
@@ -79,7 +90,8 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-semibold mb-1">Adres</h3>
                   <p className="text-sm text-foreground/60">
-                    Nişantaşı, İstanbul<br />
+                    Nişantaşı, İstanbul
+                    <br />
                     Türkiye
                   </p>
                 </div>
@@ -93,13 +105,13 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">Sosyal Medya</h3>
-                  <a 
-                    href="https://instagram.com" 
-                    target="_blank" 
+                  <a
+                    href="https://instagram.com"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-secondary hover:underline"
                   >
-                    @aura_official
+                    @ravor_official
                   </a>
                 </div>
               </div>
@@ -110,7 +122,7 @@ export default function ContactPage() {
           <div className="lg:col-span-2">
             <div className="bg-muted p-8 rounded-lg">
               <h2 className="text-2xl font-bold mb-6">Bize Yazın</h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -196,16 +208,17 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  disabled={status === 'loading'}
+                  disabled={status === "loading"}
                   className="w-full bg-primary text-white px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
-                  {status === 'loading' ? 'Gönderiliyor...' : 'Gönder'}
+                  {status === "loading" ? "Gönderiliyor..." : "Gönder"}
                 </button>
 
-                {status === 'success' && (
+                {status === "success" && (
                   <div className="p-4 bg-green-50 border border-green-200 rounded-md">
                     <p className="text-green-800 text-sm">
-                      ✓ Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.
+                      ✓ Mesajınız başarıyla gönderildi. En kısa sürede size
+                      dönüş yapacağız.
                     </p>
                   </div>
                 )}
@@ -216,7 +229,9 @@ export default function ContactPage() {
 
         {/* Çalışma Saatleri */}
         <div className="bg-accent/20 p-8 rounded-lg">
-          <h3 className="text-xl font-bold mb-4 text-center">Çalışma Saatlerimiz</h3>
+          <h3 className="text-xl font-bold mb-4 text-center">
+            Çalışma Saatlerimiz
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
             <div className="flex justify-between p-3 bg-white rounded-md">
               <span className="font-medium">Pazartesi - Cuma</span>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FiSearch,
   FiShoppingBag,
@@ -20,8 +20,33 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const lastYRef = useRef(0);
   const { user, logout } = useAuth();
   const { favorites } = useFavorites();
+
+  useEffect(() => {
+    let ticking = false;
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY || window.pageYOffset;
+        // when scrolling down, hide header; when scrolling up, show header
+        if (y > lastYRef.current && y > 100) {
+          setVisible(false);
+        } else {
+          setVisible(true);
+        }
+        lastYRef.current = y;
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const categories = [
     { name: "Elbiseler", href: "/koleksiyon/elbiseler" },
@@ -34,10 +59,16 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-[rgba(251,241,238,0.95)] backdrop-blur border-b border-champagne-200 shadow-sm">
+    <header
+      className={`sticky top-0 z-50 bg-white transform transition-transform duration-300 ease-out ${
+        visible ? "translate-y-0 shadow-sm" : "-translate-y-full"
+      }`}
+    >
       {/* Top bar - Ücretsiz kargo banner */}
-      <div className="bg-champagne-peach text-champagne-contrast text-center py-2 text-sm tracking-wide">
-        <p>2.000 TL ve üzeri alışverişlerde ücretsiz kargo 🚚</p>
+      <div className="bg-white text-center py-2 text-sm tracking-wide">
+        <p className="text-champagne-contrast">
+          2.000 TL ve üzeri alışverişlerde ücretsiz kargo
+        </p>
       </div>
 
       {/* Main header */}
@@ -53,16 +84,20 @@ export default function Header() {
           </button>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3" aria-label="AURA anasayfa">
+          <Link
+            href="/"
+            className="flex items-center gap-3"
+            aria-label="RAVOR anasayfa"
+          >
             <Image
-              src="/logo-aura.svg"
-              alt="AURA"
+              src="/logo-rv.svg"
+              alt="RAVOR"
               width={120}
               height={36}
               className="h-9 w-auto object-contain"
               priority
             />
-            <span className="sr-only">AURA</span>
+            <span className="sr-only">RAVOR</span>
           </Link>
 
           {/* Desktop navigation */}
@@ -101,7 +136,7 @@ export default function Header() {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur border border-champagne-200 rounded-md shadow-lg py-2">
+                  <div className="absolute right-0 mt-2 w-48 bg-white/90 backdrop-blur border border-champagne-200 rounded-md shadow-lg py-2">
                     <Link
                       href="/hesap"
                       className="block px-4 py-2 text-sm text-champagne-contrast opacity-80 hover:opacity-100 hover:bg-champagne-100 transition-colors"
@@ -132,7 +167,7 @@ export default function Header() {
             ) : (
               <Link
                 href="/giris"
-                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary text-champagne-100 rounded-md hover:bg-[rgba(139,94,75,0.9)] transition-colors text-sm font-medium"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary text-champagne-100 rounded-md hover:bg-[rgba(139,94,75,0.7)] transition-colors text-sm font-medium"
               >
                 <FiUser size={18} />
                 Giriş Yap
@@ -178,6 +213,7 @@ export default function Header() {
         )}
       </div>
 
+      {/* Mobile menu */}
       <HamburgerMenu
         open={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
@@ -186,3 +222,6 @@ export default function Header() {
     </header>
   );
 }
+
+// scroll listener to show/hide header based on scroll direction
+// Note: this effect runs on mount inside the component body via useEffect below

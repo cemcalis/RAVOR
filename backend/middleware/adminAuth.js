@@ -4,8 +4,13 @@ const db = require('../db');
 // Only accept Authorization: Bearer <token>
 const adminAuth = async (req, res, next) => {
   try {
+    // Accept token from Authorization header OR from cookie named 'adminToken'
     const authHeader = req.headers.authorization || req.headers.Authorization;
-    const token = authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+    let token = authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+    if (!token && req.cookies) {
+      token = req.cookies.adminToken || null;
+    }
 
     if (!token) {
       return res.status(401).json({ success: false, message: 'Admin token gerekli' });
@@ -21,6 +26,11 @@ const adminAuth = async (req, res, next) => {
 
     if (!decoded || !decoded.userId) {
       return res.status(403).json({ success: false, message: 'Geçersiz token' });
+    }
+
+    // Ensure token has admin claim
+    if (!decoded.isAdmin && decoded.isAdmin !== true) {
+      return res.status(403).json({ success: false, message: 'Admin yetkisi gerekli' });
     }
 
     // Ensure user exists and is admin in DB

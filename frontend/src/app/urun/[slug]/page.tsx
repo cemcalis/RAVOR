@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -126,16 +127,32 @@ export default function ProductPage() {
     );
   }
 
+  const router = useRouter();
+
   const handleAddToCart = async () => {
-    // TODO: Implement add to cart functionality
-    console.log(
-      "Sepete eklendi:",
-      product.name,
-      "Adet:",
-      quantity,
-      "Beden:",
-      selectedSize
-    );
+    // Require user to be logged in before adding to cart
+    if (!user) {
+      // Redirect to registration page (per request)
+      router.push(`/kayit?redirect=/urun/${product.slug}`);
+      return;
+    }
+
+    try {
+      // Use session-based cart API if you have sessionId available.
+      // For now we just call the api layer if session logic exists.
+      const sessionId = localStorage.getItem("sessionId") || "guest";
+      await api.addToCart(sessionId, {
+        product_id: product.id,
+        quantity,
+        size: selectedSize,
+      });
+
+      // Simple feedback for now
+      alert("Ürün sepete eklendi");
+    } catch (err) {
+      console.error("Sepete eklenirken hata:", err);
+      alert("Sepete eklenemedi. Lütfen tekrar deneyin.");
+    }
   };
 
   const discount = product.compare_price

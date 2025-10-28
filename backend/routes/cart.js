@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
 
 // Basit in-memory cart (gerçek projede session/cookie kullanılır)
 let carts = {};
@@ -8,6 +9,16 @@ let carts = {};
 router.get('/:sessionId', (req, res) => {
   const cart = carts[req.params.sessionId] || { items: [], total: 0 };
   res.json(cart);
+});
+
+// Create a new session id and set cookie (frontend can call this once)
+router.post('/session', (req, res) => {
+  const sessionId = crypto.randomBytes(12).toString('hex');
+  // set cookie so browser sends sessionId automatically; not HttpOnly so frontend can read if needed
+  res.cookie('sessionId', sessionId, { maxAge: 30 * 24 * 60 * 60 * 1000, sameSite: 'lax' });
+  // initialize empty cart
+  carts[sessionId] = { items: [], total: 0 };
+  res.json({ success: true, sessionId });
 });
 
 // Sepete ürün ekle

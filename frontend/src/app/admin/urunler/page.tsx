@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { HiPlus, HiPencil, HiTrash, HiSearch } from 'react-icons/hi';
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { HiPlus, HiPencil, HiTrash, HiSearch } from "react-icons/hi";
 
 interface Product {
   id: number;
@@ -31,44 +31,44 @@ export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    comparePrice: '',
-    image: '',
-    images: '',
-    category_id: '',
-    stock: '',
+    name: "",
+    description: "",
+    price: "",
+    comparePrice: "",
+    image: "",
+    images: "",
+    category_id: "",
+    stock: "",
     sizes: [] as string[],
     colors: [] as string[],
     is_featured: false,
-    is_new: false
+    is_new: false,
   });
   const router = useRouter();
 
   const fetchProducts = useCallback(async () => {
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem("adminToken");
 
       if (!token) {
-        router.push('/admin/giris');
+        router.push("/admin/giris");
         setLoading(false);
         return;
       }
 
-      const response = await fetch('/api/admin/products', {
+      const response = await fetch("/api/admin/products", {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem('adminToken');
-        router.push('/admin/giris');
+        localStorage.removeItem("adminToken");
+        router.push("/admin/giris");
         setLoading(false);
         return;
       }
@@ -78,7 +78,7 @@ export default function AdminProducts() {
         setProducts(data.data.products);
       }
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
@@ -86,22 +86,22 @@ export default function AdminProducts() {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem("adminToken");
 
       if (!token) {
-        router.push('/admin/giris');
+        router.push("/admin/giris");
         return;
       }
 
-      const response = await fetch('/api/admin/categories', {
+      const response = await fetch("/api/admin/categories", {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem('adminToken');
-        router.push('/admin/giris');
+        localStorage.removeItem("adminToken");
+        router.push("/admin/giris");
         return;
       }
 
@@ -110,7 +110,7 @@ export default function AdminProducts() {
         setCategories(data.data);
       }
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   }, [router]);
 
@@ -119,9 +119,10 @@ export default function AdminProducts() {
     fetchCategories();
   }, [fetchCategories, fetchProducts]);
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,7 +132,9 @@ export default function AdminProducts() {
       name: formData.name,
       description: formData.description,
       price: parseFloat(formData.price),
-      compare_price: formData.comparePrice ? parseFloat(formData.comparePrice) : null,
+      compare_price: formData.comparePrice
+        ? parseFloat(formData.comparePrice)
+        : null,
       image: formData.image,
       images: formData.images,
       category_id: parseInt(formData.category_id),
@@ -139,21 +142,23 @@ export default function AdminProducts() {
       sizes: formData.sizes,
       colors: formData.colors,
       is_featured: formData.is_featured,
-      is_new: formData.is_new
+      is_new: formData.is_new,
     };
 
     try {
-      const token = localStorage.getItem('adminToken');
-      const url = editingProduct ? `/api/admin/products/${editingProduct.id}` : '/api/admin/products';
-      const method = editingProduct ? 'PUT' : 'POST';
+      const token = localStorage.getItem("adminToken");
+      const url = editingProduct
+        ? `/api/admin/products/${editingProduct.id}`
+        : "/api/admin/products";
+      const method = editingProduct ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(productData)
+        body: JSON.stringify(productData),
       });
 
       if (response.ok) {
@@ -163,7 +168,45 @@ export default function AdminProducts() {
         fetchProducts();
       }
     } catch (error) {
-      console.error('Error saving product:', error);
+      console.error("Error saving product:", error);
+    }
+  };
+
+  // Upload handler for image files (SVG allowed)
+  const handleFileUpload = async (file: File) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        alert("Önce admin girişi yapmalısınız");
+        return;
+      }
+
+      const form = new FormData();
+      form.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: form,
+      });
+
+      if (!res.ok) {
+        const err = await res
+          .json()
+          .catch(() => ({ message: "Yükleme hatası" }));
+        alert(err.message || "Yükleme başarısız");
+        return;
+      }
+
+      const data = await res.json();
+      if (data && data.url) {
+        setFormData((prev) => ({ ...prev, image: data.url }));
+      }
+    } catch (error) {
+      console.error("Upload error", error);
+      alert("Dosya yüklenirken hata oluştu");
     }
   };
 
@@ -173,53 +216,55 @@ export default function AdminProducts() {
       name: product.name,
       description: product.description,
       price: product.price.toString(),
-      comparePrice: product.compare_price ? product.compare_price.toString() : '',
+      comparePrice: product.compare_price
+        ? product.compare_price.toString()
+        : "",
       image: product.image,
-      images: product.images || '',
+      images: product.images || "",
       category_id: product.category_id.toString(),
       stock: product.stock.toString(),
-      sizes: product.sizes ? product.sizes.split(',') : [],
-      colors: product.colors ? product.colors.split(',') : [],
+      sizes: product.sizes ? product.sizes.split(",") : [],
+      colors: product.colors ? product.colors.split(",") : [],
       is_featured: product.is_featured,
-      is_new: product.is_new
+      is_new: product.is_new,
     });
     setShowModal(true);
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
+    if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) return;
 
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/products/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
         fetchProducts();
       }
     } catch (error) {
-      console.error('Error deleting product:', error);
+      console.error("Error deleting product:", error);
     }
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      description: '',
-      price: '',
-      comparePrice: '',
-      image: '',
-      images: '',
-      category_id: '',
-      stock: '',
+      name: "",
+      description: "",
+      price: "",
+      comparePrice: "",
+      image: "",
+      images: "",
+      category_id: "",
+      stock: "",
       sizes: [],
       colors: [],
       is_featured: false,
-      is_new: false
+      is_new: false,
     });
   };
 
@@ -303,7 +348,9 @@ export default function AdminProducts() {
                         alt={product.name}
                       />
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {product.name}
+                        </div>
                         <div className="text-sm text-gray-500 truncate max-w-xs">
                           {product.description}
                         </div>
@@ -314,20 +361,35 @@ export default function AdminProducts() {
                     ₺{product.price}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs rounded-full ${
-                      product.stock > 10 ? 'bg-green-100 text-green-800' :
-                      product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs rounded-full ${
+                        product.stock > 10
+                          ? "bg-green-100 text-green-800"
+                          : product.stock > 0
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
                       {product.stock}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {categories.find(cat => cat.id === product.category_id)?.name || 'Bilinmiyor'}
+                    {categories.find((cat) => cat.id === product.category_id)
+                      ?.name || "Bilinmiyor"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {product.sizes && <div>Beden: {product.sizes.split(',').slice(0, 2).join(', ')}{product.sizes.split(',').length > 2 ? '...' : ''}</div>}
-                    {product.colors && <div>Renk: {product.colors.split(',').slice(0, 2).join(', ')}{product.colors.split(',').length > 2 ? '...' : ''}</div>}
+                    {product.sizes && (
+                      <div>
+                        Beden: {product.sizes.split(",").slice(0, 2).join(", ")}
+                        {product.sizes.split(",").length > 2 ? "..." : ""}
+                      </div>
+                    )}
+                    {product.colors && (
+                      <div>
+                        Renk: {product.colors.split(",").slice(0, 2).join(", ")}
+                        {product.colors.split(",").length > 2 ? "..." : ""}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
@@ -357,10 +419,13 @@ export default function AdminProducts() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">
-              {editingProduct ? 'Ürün Düzenle' : 'Yeni Ürün'}
+              {editingProduct ? "Ürün Düzenle" : "Yeni Ürün"}
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4 max-h-[80vh] overflow-y-auto">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 max-h-[80vh] overflow-y-auto"
+            >
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ürün Adı
@@ -368,7 +433,9 @@ export default function AdminProducts() {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
@@ -380,7 +447,9 @@ export default function AdminProducts() {
                 </label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -396,7 +465,9 @@ export default function AdminProducts() {
                     type="number"
                     step="0.01"
                     value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, price: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
@@ -410,7 +481,9 @@ export default function AdminProducts() {
                     type="number"
                     step="0.01"
                     value={formData.comparePrice}
-                    onChange={(e) => setFormData({...formData, comparePrice: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, comparePrice: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -420,13 +493,29 @@ export default function AdminProducts() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ana Resim URL
                 </label>
-                <input
-                  type="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={formData.image}
+                    onChange={(e) =>
+                      setFormData({ ...formData, image: e.target.value })
+                    }
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                  <label className="px-3 py-2 bg-gray-100 rounded-md border border-gray-300 cursor-pointer">
+                    Dosya Seç
+                    <input
+                      type="file"
+                      accept="image/*,.svg"
+                      onChange={(e) => {
+                        const f = e.target.files && e.target.files[0];
+                        if (f) handleFileUpload(f);
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
                 {formData.image && (
                   <img
                     src={formData.image}
@@ -442,7 +531,9 @@ export default function AdminProducts() {
                 </label>
                 <textarea
                   value={formData.images}
-                  onChange={(e) => setFormData({...formData, images: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, images: e.target.value })
+                  }
                   rows={2}
                   placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -455,12 +546,14 @@ export default function AdminProducts() {
                 </label>
                 <select
                   value={formData.category_id}
-                  onChange={(e) => setFormData({...formData, category_id: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category_id: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 >
                   <option value="">Kategori seçin</option>
-                  {categories.map(category => (
+                  {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
@@ -476,7 +569,9 @@ export default function AdminProducts() {
                   <input
                     type="number"
                     value={formData.stock}
-                    onChange={(e) => setFormData({...formData, stock: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, stock: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
@@ -488,16 +583,34 @@ export default function AdminProducts() {
                   Beden Seçenekleri
                 </label>
                 <div className="grid grid-cols-4 gap-2">
-                  {['XS', 'S', 'M', 'L', 'XL', 'XXL', '36', '38', '40', '42', '44'].map(size => (
+                  {[
+                    "XS",
+                    "S",
+                    "M",
+                    "L",
+                    "XL",
+                    "XXL",
+                    "36",
+                    "38",
+                    "40",
+                    "42",
+                    "44",
+                  ].map((size) => (
                     <label key={size} className="flex items-center">
                       <input
                         type="checkbox"
                         checked={formData.sizes.includes(size)}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setFormData({...formData, sizes: [...formData.sizes, size]});
+                            setFormData({
+                              ...formData,
+                              sizes: [...formData.sizes, size],
+                            });
                           } else {
-                            setFormData({...formData, sizes: formData.sizes.filter(s => s !== size)});
+                            setFormData({
+                              ...formData,
+                              sizes: formData.sizes.filter((s) => s !== size),
+                            });
                           }
                         }}
                         className="mr-2"
@@ -508,7 +621,7 @@ export default function AdminProducts() {
                 </div>
                 {formData.sizes.length > 0 && (
                   <p className="text-sm text-gray-600 mt-1">
-                    Seçili bedenler: {formData.sizes.join(', ')}
+                    Seçili bedenler: {formData.sizes.join(", ")}
                   </p>
                 )}
               </div>
@@ -518,16 +631,33 @@ export default function AdminProducts() {
                   Renk Seçenekleri
                 </label>
                 <div className="grid grid-cols-4 gap-2">
-                  {['Siyah', 'Beyaz', 'Kırmızı', 'Mavi', 'Yeşil', 'Sarı', 'Pembe', 'Mor'].map(color => (
+                  {[
+                    "Siyah",
+                    "Beyaz",
+                    "Kırmızı",
+                    "Mavi",
+                    "Yeşil",
+                    "Sarı",
+                    "Pembe",
+                    "Mor",
+                  ].map((color) => (
                     <label key={color} className="flex items-center">
                       <input
                         type="checkbox"
                         checked={formData.colors.includes(color)}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setFormData({...formData, colors: [...formData.colors, color]});
+                            setFormData({
+                              ...formData,
+                              colors: [...formData.colors, color],
+                            });
                           } else {
-                            setFormData({...formData, colors: formData.colors.filter(c => c !== color)});
+                            setFormData({
+                              ...formData,
+                              colors: formData.colors.filter(
+                                (c) => c !== color
+                              ),
+                            });
                           }
                         }}
                         className="mr-2"
@@ -538,7 +668,7 @@ export default function AdminProducts() {
                 </div>
                 {formData.colors.length > 0 && (
                   <p className="text-sm text-gray-600 mt-1">
-                    Seçili renkler: {formData.colors.join(', ')}
+                    Seçili renkler: {formData.colors.join(", ")}
                   </p>
                 )}
               </div>
@@ -548,7 +678,12 @@ export default function AdminProducts() {
                   <input
                     type="checkbox"
                     checked={formData.is_featured}
-                    onChange={(e) => setFormData({...formData, is_featured: e.target.checked})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        is_featured: e.target.checked,
+                      })
+                    }
                     className="mr-2"
                   />
                   Öne Çıkan Ürün
@@ -558,7 +693,9 @@ export default function AdminProducts() {
                   <input
                     type="checkbox"
                     checked={formData.is_new}
-                    onChange={(e) => setFormData({...formData, is_new: e.target.checked})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_new: e.target.checked })
+                    }
                     className="mr-2"
                   />
                   Yeni Ürün
@@ -577,7 +714,7 @@ export default function AdminProducts() {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
-                  {editingProduct ? 'Güncelle' : 'Oluştur'}
+                  {editingProduct ? "Güncelle" : "Oluştur"}
                 </button>
               </div>
             </form>

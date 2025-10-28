@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');
 const logger = require('./lib/logger');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,6 +12,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// parse cookies
+app.use(cookieParser());
 
 // Routes
 const authRoutes = require('./routes/auth');
@@ -37,6 +40,11 @@ app.use('/api/reviews', reviewRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
+
+// Serve uploaded files (make sure uploads are saved to backend/public/uploads)
+const path = require('path');
+const uploadsPath = path.join(__dirname, 'public', 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // Error handling
 app.use((err, req, res, next) => {

@@ -1,6 +1,6 @@
 import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
-import Newsletter from "@/components/Newsletter";
+// Newsletter component removed from this page because it's rendered elsewhere on the layout
 import Link from "next/link";
 import Image from "next/image";
 import Section from "@/components/Section";
@@ -28,7 +28,7 @@ export default function Home() {
     <>
       <Hero />
 
-      <Section title="Koleksiyonlar" className="bg-white/60 backdrop-blur">
+      <Section title="Koleksiyonlar" bandClass="bg-[rgba(242,205,191,0.06)]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {collections.map((collection) => (
             <Link
@@ -44,9 +44,11 @@ export default function Home() {
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 priority={collection.href === collections[0].href}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(31,20,17,0.6)] via-transparent to-transparent transition-colors group-hover:from-[rgba(31,20,17,0.7)]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(31,20,17,0.32)] via-transparent to-transparent transition-colors group-hover:from-[rgba(31,20,17,0.45)]" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <h3 className="text-2xl font-semibold text-champagne-100 drop-shadow-lg">{collection.title}</h3>
+                <h3 className="text-2xl font-semibold text-champagne-100 drop-shadow-lg">
+                  {collection.title}
+                </h3>
               </div>
             </Link>
           ))}
@@ -54,8 +56,6 @@ export default function Home() {
       </Section>
 
       <ProductGrid title="Yeni Gelenler" filter="new" limit={8} />
-
-      <Newsletter />
     </>
   );
 }

@@ -6,6 +6,39 @@ const adminAuth = require('../middleware/adminAuth');
 const { importFromCSV } = require('../import-csv');
 
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Ensure upload directory exists
+const uploadDir = path.join(__dirname, '../public/uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const safeName = file.originalname.replace(/\s+/g, '-');
+    cb(null, Date.now() + '-' + safeName);
+  }
+});
+
+const upload = multer({
+  storage,
+  fileFilter: function (req, file, cb) {
+    // Allow svg and common image types
+    const allowed = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only images (including SVG) are allowed'));
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
 
 // Admin login - DB backed
 router.post('/auth/login', async (req, res) => {
@@ -34,11 +67,63 @@ router.post('/auth/login', async (req, res) => {
 
       const token = jwt.sign({ userId: user.id, email: user.email, isAdmin: true }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
+      // Set HttpOnly cookie for admin session (also return token in body for backward compatibility)
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      };
+
+      res.cookie('adminToken', token, cookieOptions);
+
       res.json({ success: true, token, message: 'Giriş başarılı' });
     });
   } catch (error) {
     console.error('Admin login error:', error);
     res.status(500).json({ success: false, message: 'Sunucu hatası' });
+  }
+});
+
+// Upload product image (admin only)
+router.post('/upload', adminAuth, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Dosya gerekli' });
+    }
+
+    // If SVG, perform lightweight sanitization: remove <script> blocks and on* attributes
+    try {
+      const mime = req.file.mimetype || '';
+      if (mime === 'image/svg+xml' || path.extname(req.file.originalname).toLowerCase() === '.svg') {
+        const filePath = req.file.path;
+        let svg = fs.readFileSync(filePath, 'utf8');
+
+        // Remove <script>...</script>
+        svg = svg.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
+
+        // Remove on* attributes like onclick, onload (basic)
+        svg = svg.replace(/\son[a-zA-Z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+
+        // Remove javascript: in href/xlink:href
+        svg = svg.replace(/(href|xlink:href)\s*=\s*("|')?javascript:[^"'>\s]+(\2)?/gi, '$1="#"');
+
+        // Write sanitized content back
+        fs.writeFileSync(filePath, svg, 'utf8');
+      }
+    } catch (sErr) {
+      console.error('SVG sanitization error:', sErr);
+      // proceed even if sanitization fails
+    }
+
+    const fileName = path.basename(req.file.path);
+    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+    const url = `${baseUrl}/uploads/${fileName}`;
+
+    res.json({ success: true, url, message: 'Dosya yüklendi' });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ success: false, message: 'Dosya yüklenemedi' });
   }
 });
 
@@ -673,3 +758,5 @@ router.post('/import-csv', adminAuth, async (req, res) => {
 });
 
 module.exports = router;
+
+

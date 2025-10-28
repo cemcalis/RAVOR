@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -13,7 +13,7 @@ export default function Hero() {
         priority
       />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-[rgba(31,20,17,0.7)] via-[rgba(139,94,75,0.6)] to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[rgba(31,20,17,0.32)] via-[rgba(139,94,75,0.25)] to-transparent" />
 
       <div className="relative h-full container mx-auto px-4 flex items-center">
         <div className="max-w-xl text-champagne-100">
@@ -28,13 +28,13 @@ export default function Hero() {
           <div className="flex gap-4">
             <Link
               href="/koleksiyon/elbiseler"
-              className="bg-champagne-peach text-champagne-contrast px-8 py-3 rounded-full font-medium shadow-[0_12px_30px_rgba(31,20,17,0.18)] hover:bg-champagne-200 transition-colors"
+              className="bg-champagne-peach text-champagne-contrast px-8 py-3 rounded-full font-medium shadow-[0_12px_30px_rgba(31,20,17,0.08)] hover:bg-champagne-200 transition-colors"
             >
               Koleksiyonu Keşfet
             </Link>
             <Link
               href="/yeni-gelenler"
-              className="border-2 border-champagne-peach text-champagne-100 px-8 py-3 rounded-full font-medium hover:bg-[rgba(242,205,191,0.1)] transition-colors"
+              className="border-2 border-champagne-peach text-champagne-100 px-8 py-3 rounded-full font-medium hover:bg-[rgba(242,205,191,0.06)] transition-colors"
             >
               Yeni Gelenler
             </Link>

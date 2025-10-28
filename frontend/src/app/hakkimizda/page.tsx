@@ -10,7 +10,7 @@ export default function AboutPage() {
           <div className="relative aspect-[4/5] rounded-lg overflow-hidden">
             <Image
               src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"
-              alt="AURA Store"
+              alt="RAVOR Store"
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 50vw"
               className="object-cover"
@@ -18,9 +18,9 @@ export default function AboutPage() {
           </div>
 
           <div className="flex flex-col justify-center">
-            <h2 className="text-3xl font-bold mb-4">AURA</h2>
+            <h2 className="text-3xl font-bold mb-4">RAVOR</h2>
             <p className="text-foreground/70 mb-4 leading-relaxed">
-              2025 yılında kurulan AURA, zamansız tasarımlar ve sürdürülebilir
+              2025 yılında kurulan RAVOR, zamansız tasarımlar ve sürdürülebilir
               moda anlayışıyla kadınların gardıroplarına değer katan parçalar
               sunuyor.
             </p>
