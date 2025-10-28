@@ -65,7 +65,16 @@ router.post('/auth/login', async (req, res) => {
         return res.status(401).json({ success: false, message: 'Geçersiz email veya şifre' });
       }
 
-      const token = jwt.sign({ userId: user.id, email: user.email, isAdmin: true }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      // Use configured JWT secret or fallback to a development secret to avoid crashing
+      const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-in-production';
+
+      let token;
+      try {
+        token = jwt.sign({ userId: user.id, email: user.email, isAdmin: true }, jwtSecret, { expiresIn: '24h' });
+      } catch (signErr) {
+        console.error('JWT sign error:', signErr);
+        return res.status(500).json({ success: false, message: 'Giriş sırasında hata oluştu' });
+      }
 
       // Set HttpOnly cookie for admin session (also return token in body for backward compatibility)
       const cookieOptions = {
