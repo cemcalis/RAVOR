@@ -46,7 +46,7 @@ export default function Newsletter() {
           <button
             type="submit"
             disabled={status === "loading"}
-            className="bg-champagne-peach text-champagne-contrast px-8 py-3 rounded-md font-medium shadow-[0_10px_25px_rgba(31,20,17,0.06)] hover:bg-champagne-200 transition-colors disabled:opacity-50"
+            className="bg-primary text-white px-8 py-3 rounded-md font-medium shadow-[0_10px_25px_rgba(31,20,17,0.06)] hover:bg-[rgba(139,94,75,0.85)] transition-colors disabled:opacity-50"
           >
             {status === "loading" ? "Gönderiliyor..." : "Abone Ol"}
           </button>
