@@ -51,42 +51,50 @@ router.post('/auth/login', async (req, res) => {
 
     // Find admin user in DB
     db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
-      if (err) {
-        return res.status(500).json({ success: false, message: 'Veritabanı hatası' });
-      }
+        try {
+          if (err) {
+            console.error('DB error during admin login lookup:', err);
+            return res.status(500).json({ success: false, message: 'Veritabanı hatası' });
+          }
 
-      if (!user || !user.is_admin) {
-        return res.status(401).json({ success: false, message: 'Geçersiz email veya şifre' });
-      }
+          if (!user || !user.is_admin) {
+            return res.status(401).json({ success: false, message: 'Geçersiz email veya şifre' });
+          }
 
-      // Compare password (stored hashed)
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) {
-        return res.status(401).json({ success: false, message: 'Geçersiz email veya şifre' });
-      }
+          // Compare password (stored hashed)
+          const match = await bcrypt.compare(password, user.password);
+          if (!match) {
+            return res.status(401).json({ success: false, message: 'Geçersiz email veya şifre' });
+          }
 
-      // Use configured JWT secret or fallback to a development secret to avoid crashing
-      const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-in-production';
+          // Use configured JWT secret or fallback to a development secret to avoid crashing
+          const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-in-production';
 
-      let token;
-      try {
-        token = jwt.sign({ userId: user.id, email: user.email, isAdmin: true }, jwtSecret, { expiresIn: '24h' });
-      } catch (signErr) {
-        console.error('JWT sign error:', signErr);
-        return res.status(500).json({ success: false, message: 'Giriş sırasında hata oluştu' });
-      }
+          let token;
+          try {
+            token = jwt.sign({ userId: user.id, email: user.email, isAdmin: true }, jwtSecret, { expiresIn: '24h' });
+          } catch (signErr) {
+            console.error('JWT sign error:', signErr);
+            return res.status(500).json({ success: false, message: 'Giriş sırasında hata oluştu' });
+          }
 
-      // Set HttpOnly cookie for admin session (also return token in body for backward compatibility)
-      const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-      };
+          // Set HttpOnly cookie for admin session (also return token in body for backward compatibility)
+          const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+          };
 
-      res.cookie('adminToken', token, cookieOptions);
+          res.cookie('adminToken', token, cookieOptions);
 
-      res.json({ success: true, token, message: 'Giriş başarılı' });
+          res.json({ success: true, token, message: 'Giriş başarılı' });
+        } catch (innerErr) {
+          // Catch any unexpected error inside the DB callback async flow to avoid crashing the process
+          console.error('Unexpected error inside admin login flow:', innerErr && innerErr.stack ? innerErr.stack : innerErr);
+          // Provide a minimal error message to the client; full stack is logged
+          return res.status(500).json({ success: false, message: 'Sunucu hatası (login)' });
+        }
     });
   } catch (error) {
     console.error('Admin login error:', error);
