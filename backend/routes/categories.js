@@ -56,9 +56,15 @@ router.post('/', (req, res) => {
 router.post('/admin', adminAuth, (req, res) => {
   const { name } = req.body;
 
+  // Slug oluştur
+  const slug = name.toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+    .replace(/\-+/g, '-');
+
   db.run(
-    'INSERT INTO categories (name) VALUES (?)',
-    [name],
+    'INSERT INTO categories (name, slug) VALUES (?, ?)',
+    [name, slug],
     function(err) {
       if (err) {
         return res.status(500).json({ success: false, message: err.message });

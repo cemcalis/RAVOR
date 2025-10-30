@@ -670,6 +670,35 @@ router.delete('/users/:id', adminAuth, async (req, res) => {
   }
 });
 
+// Ban/Unban user
+router.put('/users/:id/ban', adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { banned } = req.body;
+
+    await new Promise((resolve, reject) => {
+      db.run(`
+        UPDATE users
+        SET is_admin = ?
+        WHERE id = ?
+      `, [banned ? 0 : 1, id], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    res.json({
+      success: true,
+      message: banned ? 'Kullanıcı banlandı' : 'Kullanıcı banı kaldırıldı'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Kullanıcı ban durumu güncellenemedi'
+    });
+  }
+});
+
 // Get settings
 router.get('/settings', adminAuth, async (req, res) => {
   try {

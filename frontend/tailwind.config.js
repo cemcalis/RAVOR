@@ -20,7 +20,16 @@ module.exports = {
         'champagne-accent': '#8B5E4B',
         'champagne-100': '#FBF1EE',
         'champagne-200': '#F7D7C8',
-      }
+      },
+      keyframes: {
+        'slide-in': {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+      },
+      animation: {
+        'slide-in': 'slide-in 0.3s ease-out',
+      },
     },
   },
   plugins: [],

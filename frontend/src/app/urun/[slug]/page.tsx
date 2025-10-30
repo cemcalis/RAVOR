@@ -8,6 +8,7 @@ import Link from "next/link";
 import { FiShoppingBag, FiHeart } from "react-icons/fi";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useCart } from "@/contexts/CartContext";
 import { api } from "@/lib/api";
 
 interface Product {
@@ -75,6 +76,7 @@ export default function ProductPage() {
 
   const { user } = useAuth();
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
+  const { addToCart } = useCart();
 
   const router = useRouter();
 
@@ -129,7 +131,6 @@ export default function ProductPage() {
     );
   }
 
-
   const handleAddToCart = async () => {
     // Require user to be logged in before adding to cart
     if (!user) {
@@ -139,12 +140,12 @@ export default function ProductPage() {
     }
 
     try {
-      // Use session-based cart API if you have sessionId available.
-      // For now we just call the api layer if session logic exists.
-      const sessionId = localStorage.getItem("sessionId") || "guest";
-      await api.addToCart(sessionId, {
-        product_id: product.id,
+      await addToCart(product.id, {
+        variant_id: undefined, // şimdilik variant yok
         quantity,
+        price: product.price,
+        name: product.name,
+        image_url: product.image_url,
         size: selectedSize,
       });
 
@@ -257,10 +258,10 @@ export default function ProductPage() {
                     key={variant.id}
                     onClick={() => setSelectedSize(variant.size)}
                     disabled={variant.stock === 0}
-                    className={`px-4 py-2 border rounded-md transition-colors ${
+                    className={`px-4 py-2 border rounded-md transition-colors font-semibold ${
                       selectedSize === variant.size
-                        ? "border-primary bg-primary text-white"
-                        : "border-border hover:border-primary"
+                        ? "border-champagne-contrast/60 hover:border-champagne-contrast/80 text-champagne-contrast bg-white shadow-sm ring-1 ring-champagne-contrast/30"
+                        : "border-gray-300 hover:border-champagne-contrast/60 text-gray-900 bg-white"
                     } ${
                       variant.stock === 0 ? "opacity-30 cursor-not-allowed" : ""
                     }`}
@@ -278,14 +279,16 @@ export default function ProductPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 border border-border rounded-md hover:bg-muted transition-colors"
+                className="w-10 h-10 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors bg-white text-gray-900 font-semibold text-lg"
               >
                 -
               </button>
-              <span className="w-12 text-center font-medium">{quantity}</span>
+              <span className="w-12 text-center font-medium text-gray-900">
+                {quantity}
+              </span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 border border-border rounded-md hover:bg-muted transition-colors"
+                className="w-10 h-10 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors bg-white text-gray-900 font-semibold text-lg"
               >
                 +
               </button>
@@ -297,14 +300,31 @@ export default function ProductPage() {
             <button
               onClick={handleAddToCart}
               disabled={product.stock_status === "out_of_stock"}
-              className="flex-1 bg-primary text-white px-6 py-4 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-white border border-champagne-contrast/60 text-champagne-contrast px-6 py-4 rounded-md font-medium shadow-sm hover:bg-gray-50 hover:shadow transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <FiShoppingBag />
               {product.stock_status === "out_of_stock"
                 ? "Stokta Yok"
                 : "Sepete Ekle"}
             </button>
-            <button className="w-14 h-14 border border-border rounded-md hover:bg-muted transition-colors flex items-center justify-center">
+            <button 
+              onClick={() => {
+                if (!user) {
+                  router.push(`/giris?redirect=/urun/${product.slug}`);
+                  return;
+                }
+                if (isFavorite(product.id)) {
+                  removeFromFavorites(product.id);
+                } else {
+                  addToFavorites(product.id);
+                }
+              }}
+              className={`w-14 h-14 border rounded-md transition-colors flex items-center justify-center ${
+                isFavorite(product.id) 
+                  ? "border-red-300 bg-red-50 text-red-600" 
+                  : "border-gray-300 hover:bg-gray-100 bg-white text-gray-900"
+              }`}
+            >
               <FiHeart size={20} />
             </button>
           </div>

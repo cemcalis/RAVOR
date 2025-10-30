@@ -138,6 +138,26 @@ function initDatabase() {
       )
     `);
 
+    // Sepet (session-based)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS cart_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id TEXT NOT NULL,
+        product_id INTEGER NOT NULL,
+        variant_id INTEGER,
+        quantity INTEGER DEFAULT 1,
+        price REAL NOT NULL,
+        name TEXT NOT NULL,
+        image_url TEXT,
+        size TEXT,
+        color TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        FOREIGN KEY (variant_id) REFERENCES variants(id) ON DELETE SET NULL
+      )
+    `);
+
     console.log('✅ Veritabanı tabloları hazır');
     // Runtime migrations: ensure users table has is_admin and updated_at columns
     db.all("PRAGMA table_info(users)", (err, cols) => {

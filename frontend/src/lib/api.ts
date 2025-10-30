@@ -85,6 +85,10 @@ export const api = {
   getCategory: (slug: string) => fetchAPI(`/categories/${slug}`),
 
   // Cart
+  createSession: () => fetchAPI('/cart/session', {
+    method: 'POST',
+  }),
+
   getCart: (sessionId: string) => fetchAPI(`/cart/${sessionId}`),
 
   addToCart: (sessionId: string, data: any) => fetchAPI(`/cart/${sessionId}/add`, {

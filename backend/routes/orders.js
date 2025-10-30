@@ -179,4 +179,106 @@ router.get('/:id', authenticateToken, (req, res) => {
   });
 });
 
+// Cancel order (restore stock)
+router.post('/:id/cancel', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { reason } = req.body;
+  const userId = req.user?.userId || req.user?.id;
+
+  try {
+    // Get order details
+    const order = await getAsync('SELECT * FROM orders WHERE id = ?', [id]);
+    
+    if (!order) {
+      return res.status(404).json({ error: 'Sipariş bulunamadı' });
+    }
+
+    // Check if user owns this order or is admin
+    if (order.user_id !== userId && !req.user.isAdmin) {
+      return res.status(403).json({ error: 'Bu siparişi iptal etme yetkiniz yok' });
+    }
+
+    // Check if order can be cancelled
+    if (order.status === 'cancelled') {
+      return res.status(400).json({ error: 'Sipariş zaten iptal edilmiş' });
+    }
+
+    if (order.status === 'delivered') {
+      return res.status(400).json({ error: 'Teslim edilmiş sipariş iptal edilemez. İade işlemi başlatın.' });
+    }
+
+    await runAsync('BEGIN TRANSACTION');
+
+    // Get order items
+    const items = await allAsync('SELECT * FROM order_items WHERE order_id = ?', [id]);
+
+    // Restore stock for each item
+    for (const item of items) {
+      if (item.variant_id) {
+        await runAsync('UPDATE variants SET stock = stock + ? WHERE id = ?', [item.quantity, item.variant_id]);
+        logger.info(`Cancelled order ${id}: restored variant ${item.variant_id} stock by ${item.quantity}`);
+      } else if (item.product_id) {
+        await runAsync('UPDATE products SET stock = stock + ? WHERE id = ?', [item.quantity, item.product_id]);
+        logger.info(`Cancelled order ${id}: restored product ${item.product_id} stock by ${item.quantity}`);
+      }
+    }
+
+    // Update order status
+    await runAsync(
+      'UPDATE orders SET status = ?, cancellation_reason = ?, cancelled_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      ['cancelled', reason || 'Kullanıcı tarafından iptal edildi', id]
+    );
+
+    await runAsync('COMMIT');
+
+    res.json({ 
+      success: true, 
+      message: 'Sipariş iptal edildi ve stoklar güncellendi' 
+    });
+  } catch (err) {
+    try {
+      await runAsync('ROLLBACK');
+    } catch (e) {
+      // ignore
+    }
+    console.error('Order cancellation error:', err && err.stack ? err.stack : err);
+    res.status(500).json({ error: 'Sipariş iptali sırasında hata oluştu' });
+  }
+});
+
+// Request return/refund
+router.post('/:id/return', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { items, reason } = req.body;
+  const userId = req.user?.userId || req.user?.id;
+
+  try {
+    const order = await getAsync('SELECT * FROM orders WHERE id = ?', [id]);
+    
+    if (!order) {
+      return res.status(404).json({ error: 'Sipariş bulunamadı' });
+    }
+
+    if (order.user_id !== userId && !req.user.isAdmin) {
+      return res.status(403).json({ error: 'Bu sipariş için iade talebi oluşturamazsınız' });
+    }
+
+    if (order.status !== 'delivered') {
+      return res.status(400).json({ error: 'Sadece teslim edilmiş siparişler için iade talebi oluşturulabilir' });
+    }
+
+    // Create return request (for now, just log it - you can create a returns table later)
+    logger.info(`Return request for order ${id}: ${JSON.stringify({ items, reason })}`);
+
+    res.json({ 
+      success: true, 
+      message: 'İade talebiniz alındı. En kısa sürede size dönüş yapılacak.',
+      return_id: Date.now() // temporary - should use proper returns table
+    });
+  } catch (err) {
+    console.error('Return request error:', err);
+    res.status(500).json({ error: 'İade talebi oluşturulurken hata oluştu' });
+  }
+});
+
 module.exports = router;

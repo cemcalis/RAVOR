@@ -5,6 +5,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
+import { CartProvider } from "@/contexts/CartContext";
+import { ToastProvider } from "@/components/Toast";
+import CookieConsent from "@/components/CookieConsent";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,15 +47,22 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="font-body antialiased bg-background text-foreground">
-        <AuthProvider>
-          <FavoritesProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-          </FavoritesProvider>
-        </AuthProvider>
+        <ErrorBoundary>
+          <ToastProvider>
+            <AuthProvider>
+              <CartProvider>
+                <FavoritesProvider>
+                  <div className="min-h-screen flex flex-col">
+                    <Header />
+                    <main className="flex-grow">{children}</main>
+                    <Footer />
+                  </div>
+                  <CookieConsent />
+                </FavoritesProvider>
+              </CartProvider>
+            </AuthProvider>
+          </ToastProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

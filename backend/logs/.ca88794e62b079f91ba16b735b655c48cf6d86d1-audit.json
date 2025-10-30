@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\Cem\\Desktop\\iş\\antalya iş\\istek\\backend\\logs\\.ca88794e62b079f91ba16b735b655c48cf6d86d1-audit.json",
+    "files": [
+        {
+            "date": 1761853717776,
+            "name": "C:\\Users\\Cem\\Desktop\\iş\\antalya iş\\istek\\backend\\logs\\app-2025-10-30.log",
+            "hash": "8b5ba9af4f9e8180c08ffa8d787fc85a9d24684bf9adc64c89bd8438092b848a"
+        }
+    ],
+    "hashType": "sha256"
+}

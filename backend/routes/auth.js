@@ -3,12 +3,19 @@ const router = express.Router();
 const db = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { 
+  validateRegistration, 
+  validateLogin, 
+  handleValidationErrors, 
+  createAccountLimiter, 
+  loginLimiter 
+} = require('../middleware/security');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const SALT_ROUNDS = 10;
 
 // Kayıt ol
-router.post('/register', async (req, res) => {
+router.post('/register', createAccountLimiter, validateRegistration, handleValidationErrors, async (req, res) => {
   const { email, password, name, phone, address } = req.body;
 
   // Validasyon
@@ -63,7 +70,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Giriş yap
-router.post('/login', (req, res) => {
+router.post('/login', loginLimiter, validateLogin, handleValidationErrors, (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {

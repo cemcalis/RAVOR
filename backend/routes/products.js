@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const adminAuth = require('../middleware/adminAuth');
 
 // Tüm ürünleri getir (filtreleme + sıralama)
 router.get('/', (req, res) => {
@@ -95,7 +96,7 @@ router.get('/:slug', (req, res) => {
 });
 
 // Yeni ürün ekle
-router.post('/', (req, res) => {
+router.post('/', adminAuth, (req, res) => {
   const { name, slug, description, price, compare_price, category_id, image_url, images, stock_status, is_featured, is_new } = req.body;
 
   const query = `

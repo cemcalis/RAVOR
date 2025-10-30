@@ -145,7 +145,7 @@ export default function Footer() {
               />
               <button
                 type="submit"
-                className="bg-primary text-white px-4 py-2 rounded-md hover:bg-[rgba(139,94,75,0.65)] transition-colors text-sm font-medium"
+                className="bg-white text-gray-900 border border-gray-300 px-4 py-2 rounded-md hover:bg-champagne-darker hover:text-gray-900 transition-colors text-sm font-medium"
               >
                 Abone Ol
               </button>
