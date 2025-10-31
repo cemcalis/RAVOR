@@ -37,7 +37,7 @@ const upload = multer({
       cb(new Error('Invalid file type. Only images (including SVG) are allowed'));
     }
   },
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
 
 // Admin login - DB backed
