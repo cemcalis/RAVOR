@@ -3,7 +3,7 @@ import { FiInstagram, FiMail } from "react-icons/fi";
 
 export default function Footer() {
   return (
-    <footer className="bg-white mt-20">
+    <footer className="mt-20">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Marka */}
