@@ -169,7 +169,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary text-black py-3 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-white shadow-sm"
+            className="w-full bg-primary text-black py-3 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-black shadow-sm"
           >
             {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
           </button>
