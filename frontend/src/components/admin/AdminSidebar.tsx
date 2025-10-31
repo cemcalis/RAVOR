@@ -10,6 +10,7 @@ import {
   HiUsers,
   HiCog,
   HiLogout,
+  HiChartBar,
 } from "react-icons/hi";
 
 const navigation = [
@@ -18,6 +19,7 @@ const navigation = [
   { name: "Kategoriler", href: "/admin/kategoriler", icon: HiTag },
   { name: "Siparişler", href: "/admin/siparisler", icon: HiClipboardList },
   { name: "Kullanıcılar", href: "/admin/kullanicilar", icon: HiUsers },
+  { name: "Analitik", href: "/admin/analitik", icon: HiChartBar },
   { name: "Ayarlar", href: "/admin/ayarlar", icon: HiCog },
 ];
 

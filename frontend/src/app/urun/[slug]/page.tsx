@@ -307,7 +307,7 @@ export default function ProductPage() {
                 ? "Stokta Yok"
                 : "Sepete Ekle"}
             </button>
-            <button 
+            <button
               onClick={() => {
                 if (!user) {
                   router.push(`/giris?redirect=/urun/${product.slug}`);
@@ -320,8 +320,8 @@ export default function ProductPage() {
                 }
               }}
               className={`w-14 h-14 border rounded-md transition-colors flex items-center justify-center ${
-                isFavorite(product.id) 
-                  ? "border-red-300 bg-red-50 text-red-600" 
+                isFavorite(product.id)
+                  ? "border-red-300 bg-red-50 text-red-600"
                   : "border-gray-300 hover:bg-gray-100 bg-white text-gray-900"
               }`}
             >

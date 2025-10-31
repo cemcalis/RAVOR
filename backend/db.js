@@ -43,6 +43,7 @@ function initDatabase() {
         stock_status TEXT DEFAULT 'in_stock',
         is_featured BOOLEAN DEFAULT 0,
         is_new BOOLEAN DEFAULT 0,
+        is_active BOOLEAN DEFAULT 1,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (category_id) REFERENCES categories(id)
@@ -220,7 +221,20 @@ function initDatabase() {
       }
     });
 
-    // Ensure orders.updated_at exists
+// Ensure products.is_active exists
+    db.all("PRAGMA table_info(products)", (err, cols) => {
+      if (err) return;
+      const colNames = (cols || []).map(c => c.name);
+      if (!colNames.includes('is_active')) {
+        db.run('ALTER TABLE products ADD COLUMN is_active BOOLEAN DEFAULT 1', (alterErr) => {
+          if (alterErr && !/duplicate column/i.test(alterErr.message)) {
+            console.error('products.is_active eklenemedi:', alterErr.message);
+          } else {
+            console.log('✅ products.is_active sütunu eklendi');
+          }
+        });
+      }
+    });
     db.all("PRAGMA table_info(orders)", (err, cols) => {
       if (err) return;
       const colNames = (cols || []).map(c => c.name);
@@ -249,6 +263,20 @@ function initDatabase() {
             console.error('orders.user_id eklenemedi:', alterErr.message);
           } else {
             console.log('✅ orders.user_id sütunu eklendi');
+          }
+        });
+      }
+    });
+    // Ensure products.is_active exists
+    db.all("PRAGMA table_info(products)", (err, cols) => {
+      if (err) return;
+      const colNames = (cols || []).map(c => c.name);
+      if (!colNames.includes('is_active')) {
+        db.run('ALTER TABLE products ADD COLUMN is_active BOOLEAN DEFAULT 1', (alterErr) => {
+          if (alterErr && !/duplicate column/i.test(alterErr.message)) {
+            console.error('products.is_active eklenemedi:', alterErr.message);
+          } else {
+            console.log('✅ products.is_active sütunu eklendi');
           }
         });
       }

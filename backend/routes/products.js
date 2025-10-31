@@ -7,7 +7,7 @@ const adminAuth = require('../middleware/adminAuth');
 router.get('/', (req, res) => {
   const { category, sort, featured, new_arrivals, search } = req.query;
   
-  let query = 'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE 1=1';
+  let query = 'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_active = 1';
   const params = [];
 
   if (category) {

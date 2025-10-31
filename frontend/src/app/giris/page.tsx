@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/';
+  const redirect = searchParams.get("redirect") || "/";
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       await login(email, password);
       router.push(redirect);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Giriş başarısız');
+      setError(err instanceof Error ? err.message : "Giriş başarısız");
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +59,10 @@ function LoginForm() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-2"
+            >
               Şifre
             </label>
             <input
@@ -80,14 +83,17 @@ function LoginForm() {
             disabled={isLoading}
             className="w-full bg-primary text-black py-3 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-black shadow-sm"
           >
-            {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+            {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-foreground/60">
-            Hesabınız yok mu?{' '}
-            <Link href="/kayit" className="text-primary hover:underline font-medium">
+            Hesabınız yok mu?{" "}
+            <Link
+              href="/kayit"
+              className="text-primary hover:underline font-medium"
+            >
               Kayıt Ol
             </Link>
           </p>
@@ -99,11 +105,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="container mx-auto px-4 py-16 text-center">
-        <p>Yükleniyor...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p>Yükleniyor...</p>
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

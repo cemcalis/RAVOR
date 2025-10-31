@@ -1,6 +1,6 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function OfflinePage() {
   return (
@@ -22,13 +22,14 @@ export default function OfflinePage() {
             />
           </svg>
         </div>
-        
+
         <h1 className="text-3xl font-bold text-foreground mb-4">
           Bağlantı Yok
         </h1>
-        
+
         <p className="text-gray-600 mb-8">
-          İnternet bağlantınız kesilmiş görünüyor. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.
+          İnternet bağlantınız kesilmiş görünüyor. Lütfen bağlantınızı kontrol
+          edin ve tekrar deneyin.
         </p>
 
         <div className="space-y-4">
@@ -38,7 +39,7 @@ export default function OfflinePage() {
           >
             Yeniden Dene
           </button>
-          
+
           <Link
             href="/"
             className="block w-full border border-gray-300 py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors"
@@ -56,7 +57,10 @@ export default function OfflinePage() {
               </Link>
             </li>
             <li>
-              <Link href="/siparislerim" className="text-primary hover:underline">
+              <Link
+                href="/siparislerim"
+                className="text-primary hover:underline"
+              >
                 Siparişlerim
               </Link>
             </li>

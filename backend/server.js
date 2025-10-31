@@ -9,7 +9,7 @@ const { apiVersioning, getVersionInfo } = require('./middleware/apiVersion');
 const { PerformanceMonitor, HealthCheck, checkDatabase, checkMemory, checkUptime } = require('./lib/monitoring');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Initialize monitoring
 const performanceMonitor = new PerformanceMonitor();

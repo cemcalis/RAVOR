@@ -18,6 +18,7 @@ interface Product {
   colors?: string;
   is_featured: boolean;
   is_new: boolean;
+  is_active: boolean;
   created_at: string;
   category_name?: string;
 }
@@ -47,6 +48,7 @@ export default function AdminProducts() {
     colors: [] as string[],
     is_featured: false,
     is_new: false,
+    is_active: true,
   });
   const router = useRouter();
 
@@ -143,6 +145,7 @@ export default function AdminProducts() {
       colors: formData.colors,
       is_featured: formData.is_featured,
       is_new: formData.is_new,
+      is_active: formData.is_active,
     };
 
     try {
@@ -227,6 +230,7 @@ export default function AdminProducts() {
       colors: product.colors ? product.colors.split(",") : [],
       is_featured: product.is_featured,
       is_new: product.is_new,
+      is_active: product.is_active,
     });
     setShowModal(true);
   };
@@ -265,6 +269,7 @@ export default function AdminProducts() {
       colors: [],
       is_featured: false,
       is_new: false,
+      is_active: true,
     });
   };
 
@@ -333,6 +338,9 @@ export default function AdminProducts() {
                   Varyasyonlar
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Durum
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   İşlemler
                 </th>
               </tr>
@@ -390,6 +398,17 @@ export default function AdminProducts() {
                         {product.colors.split(",").length > 2 ? "..." : ""}
                       </div>
                     )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs rounded-full ${
+                        product.is_active
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {product.is_active ? "Aktif" : "Pasif"}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
@@ -673,7 +692,7 @@ export default function AdminProducts() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <label className="flex items-center">
                   <input
                     type="checkbox"
@@ -699,6 +718,18 @@ export default function AdminProducts() {
                     className="mr-2"
                   />
                   Yeni Ürün
+                </label>
+
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.checked })
+                    }
+                    className="mr-2"
+                  />
+                  Aktif Ürün
                 </label>
               </div>
 

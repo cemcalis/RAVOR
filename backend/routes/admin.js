@@ -290,7 +290,8 @@ router.post('/products', adminAuth, async (req, res) => {
       sizes = [],
       colors = [],
       is_featured = false,
-      is_new = false
+      is_new = false,
+      is_active = true
     } = req.body;
 
     // Helper to generate slug
@@ -307,9 +308,9 @@ router.post('/products', adminAuth, async (req, res) => {
     // Insert product
     const result = await new Promise((resolve, reject) => {
       db.run(`
-        INSERT INTO products (name, slug, description, price, compare_price, image_url, images, category_id, stock, is_featured, is_new)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [name, slug, description, price, compare_price, image, images, category_id, stock, is_featured, is_new], function(err) {
+        INSERT INTO products (name, slug, description, price, compare_price, image_url, images, category_id, stock, is_featured, is_new, is_active)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [name, slug, description, price, compare_price, image, images, category_id, stock, is_featured, is_new, is_active], function(err) {
         if (err) reject(err);
         else resolve({ id: this.lastID });
       });
@@ -364,7 +365,8 @@ router.put('/products/:id', adminAuth, async (req, res) => {
       sizes = [],
       colors = [],
       is_featured = false,
-      is_new = false
+      is_new = false,
+      is_active = true
     } = req.body;
 
     // Update product
@@ -372,9 +374,9 @@ router.put('/products/:id', adminAuth, async (req, res) => {
       const slug = req.body.slug ? req.body.slug.toString().toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'').replace(/\-+/g,'-') : name.toString().toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'').replace(/\-+/g,'-');
       db.run(`
         UPDATE products
-        SET name = ?, slug = ?, description = ?, price = ?, compare_price = ?, image_url = ?, images = ?, category_id = ?, stock = ?, is_featured = ?, is_new = ?, updated_at = CURRENT_TIMESTAMP
+        SET name = ?, slug = ?, description = ?, price = ?, compare_price = ?, image_url = ?, images = ?, category_id = ?, stock = ?, is_featured = ?, is_new = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
-      `, [name, slug, description, price, compare_price, image, images, category_id, stock, is_featured, is_new, id], (err) => {
+      `, [name, slug, description, price, compare_price, image, images, category_id, stock, is_featured, is_new, is_active, id], (err) => {
         if (err) reject(err);
         else resolve();
       });
@@ -836,6 +838,197 @@ router.get('/_diag', adminAuth, (req, res) => {
     res.status(500).json({ success: false, message: 'Diag failed' });
   }
 });
+
+
+// Analytics endpoints for charts
+router.get('/analytics/sales-trend', adminAuth, async (req, res) => {
+  try {
+    const { period = 'daily', days = 30 } = req.query;
+
+    let dateFormat, groupBy;
+    if (period === 'daily') {
+      dateFormat = "strftime('%Y-%m-%d', o.created_at)";
+      groupBy = "DATE(o.created_at)";
+    } else if (period === 'monthly') {
+      dateFormat = "strftime('%Y-%m', o.created_at)";
+      groupBy = "strftime('%Y-%m', o.created_at)";
+    } else {
+      return res.status(400).json({ success: false, message: 'Invalid period. Use daily or monthly.' });
+    }
+
+    const salesData = await new Promise((resolve, reject) => {
+      db.all(`
+        SELECT
+          ${dateFormat} as date,
+          COUNT(DISTINCT o.id) as orders,
+          SUM(o.total_amount) as revenue,
+          SUM(oi.quantity) as items_sold
+        FROM orders o
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.created_at >= date('now', '-${days} days')
+        GROUP BY ${groupBy}
+        ORDER BY date ASC
+      `, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+
+    res.json({
+      success: true,
+      data: {
+        period,
+        days: parseInt(days),
+        salesData
+      }
+    });
+  } catch (error) {
+    console.error('Sales trend error:', error);
+    res.status(500).json({ success: false, message: 'Satış trend verileri alınırken hata oluştu' });
+  }
+});
+
+router.get('/analytics/top-products', adminAuth, async (req, res) => {
+  try {
+    const { limit = 10, days = 30 } = req.query;
+
+    const topProducts = await new Promise((resolve, reject) => {
+      db.all(`
+        SELECT
+          p.id,
+          p.name,
+          p.price,
+          SUM(oi.quantity) as total_sold,
+          SUM(oi.quantity * oi.price) as total_revenue,
+          COUNT(DISTINCT o.id) as order_count
+        FROM products p
+        LEFT JOIN order_items oi ON p.id = oi.product_id
+        LEFT JOIN orders o ON oi.order_id = o.id
+        WHERE o.created_at >= date('now', '-${days} days') OR o.created_at IS NULL
+        GROUP BY p.id, p.name, p.price
+        ORDER BY total_sold DESC
+        LIMIT ?
+      `, [parseInt(limit)], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+
+    res.json({
+      success: true,
+      data: {
+        limit: parseInt(limit),
+        days: parseInt(days),
+        topProducts
+      }
+    });
+  } catch (error) {
+    console.error('Top products error:', error);
+    res.status(500).json({ success: false, message: 'En çok satan ürünler verileri alınırken hata oluştu' });
+  }
+});
+
+router.get('/analytics/stock-levels', adminAuth, async (req, res) => {
+  try {
+    const { threshold = 10 } = req.query;
+
+    const stockData = await new Promise((resolve, reject) => {
+      db.all(`
+        SELECT
+          p.id,
+          p.name,
+          p.stock,
+          p.price,
+          c.name as category_name,
+          CASE
+            WHEN p.stock = 0 THEN 'out_of_stock'
+            WHEN p.stock <= ? THEN 'low_stock'
+            ELSE 'in_stock'
+          END as stock_status
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.is_active = 1
+        ORDER BY p.stock ASC
+        LIMIT 50
+      `, [parseInt(threshold)], (err, rows) => {
+        if (err) reject(err);
+          else resolve(rows);
+      });
+    });
+
+    res.json({
+      success: true,
+      data: {
+        threshold: parseInt(threshold),
+        stockData
+      }
+    });
+  } catch (error) {
+    console.error('Stock levels error:', error);
+    res.status(500).json({ success: false, message: 'Stok seviyeleri verileri alınırken hata oluştu' });
+  }
+});
+
+router.get('/analytics/price-analysis', adminAuth, async (req, res) => {
+  try {
+    const priceStats = await new Promise((resolve, reject) => {
+      db.get(`
+        SELECT
+          COUNT(*) as total_products,
+          AVG(price) as avg_price,
+          MIN(price) as min_price,
+          MAX(price) as max_price,
+          SUM(price) as total_value
+        FROM products
+        WHERE is_active = 1
+      `, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+
+    const priceRanges = await new Promise((resolve, reject) => {
+      db.all(`
+        SELECT
+          CASE
+            WHEN price < 100 THEN '0-99'
+            WHEN price < 500 THEN '100-499'
+            WHEN price < 1000 THEN '500-999'
+            WHEN price < 2000 THEN '1000-1999'
+            ELSE '2000+'
+          END as price_range,
+          COUNT(*) as count
+        FROM products
+        WHERE is_active = 1
+        GROUP BY
+          CASE
+            WHEN price < 100 THEN '0-99'
+            WHEN price < 500 THEN '100-499'
+            WHEN price < 1000 THEN '500-999'
+            WHEN price < 2000 THEN '1000-1999'
+            ELSE '2000+'
+          END
+        ORDER BY MIN(price) ASC
+      `, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+
+    res.json({
+      success: true,
+      data: {
+        priceStats,
+        priceRanges
+      }
+    });
+  } catch (error) {
+    console.error('Price analysis error:', error);
+    res.status(500).json({ success: false, message: 'Fiyat analizi verileri alınırken hata oluştu' });
+  }
+});
+
+module.exports = router;
 
 
 

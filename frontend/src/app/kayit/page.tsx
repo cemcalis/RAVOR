@@ -1,25 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuth();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    address: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+    address: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -28,15 +30,15 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Şifreler eşleşmiyor');
+      setError("Şifreler eşleşmiyor");
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır');
+      setError("Şifre en az 6 karakter olmalıdır");
       return;
     }
 
@@ -50,9 +52,9 @@ export default function RegisterPage() {
         formData.phone || undefined,
         formData.address || undefined
       );
-      router.push('/');
+      router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Kayıt başarısız');
+      setError(err instanceof Error ? err.message : "Kayıt başarısız");
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +135,10 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-2"
+            >
               Şifre *
             </label>
             <input
@@ -150,7 +155,10 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium mb-2"
+            >
               Şifre Tekrar *
             </label>
             <input
@@ -171,14 +179,17 @@ export default function RegisterPage() {
             disabled={isLoading}
             className="w-full bg-primary text-black py-3 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-black shadow-sm"
           >
-            {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
+            {isLoading ? "Kayıt yapılıyor..." : "Kayıt Ol"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-foreground/60">
-            Zaten hesabınız var mı?{' '}
-            <Link href="/giris" className="text-primary hover:underline font-medium">
+            Zaten hesabınız var mı?{" "}
+            <Link
+              href="/giris"
+              className="text-primary hover:underline font-medium"
+            >
               Giriş Yap
             </Link>
           </p>
