@@ -29,9 +29,11 @@
 body {
   background: linear-gradient(
     180deg,
-    #fff9f6 0%,
-    var(--background) 45%,
-    #f6d7ca 100%
+    #ffffff 0%,
+    #f7e6dd 20%,
+    #f2cdbf 50%,
+    #e6b8a8 80%,
+    #d4a392 100%
   );
   color: var(--foreground);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
