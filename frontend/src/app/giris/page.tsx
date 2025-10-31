@@ -78,7 +78,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary text-white py-3 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-black py-3 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-black shadow-sm"
           >
             {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
           </button>
